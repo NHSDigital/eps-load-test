@@ -1,0 +1,45 @@
+config:
+  # This is a test server run by team Artillery
+  # It's designed to be highly scalable
+  target: https://pr-843.dev.prescriptionsforpatients.national.nhs.uk
+  # target: https://pfp-pr-843.dev.eps.national.nhs.uk
+  tls:
+    rejectUnauthorized: true
+    enableTrace: true
+    secureProtocol: "TLSv1_3_method"
+    #certificate: "{{ $processEnvironment.client_cert }}"
+    #certificateAuthority: "{{ $processEnvironment.ca_cert }}"
+    #key: "{{ $processEnvironment.client_private_key }}"
+  phases:
+    - duration: 30
+      arrivalRate: 5
+      rampTo: 5
+      name: Warm up phase
+    - duration: 60
+      arrivalRate: 10
+      rampTo: 50
+      name: Ramp up load
+    - duration: 300
+      arrivalRate: 50
+      name: sustain
+  processor: "./function.js"
+  # Load & configure a couple of useful plugins
+  # https://docs.art/reference/extensions
+  plugins:
+    ensure: {}
+    apdex: {}
+    metrics-by-endpoint: {}
+  apdex:
+    threshold: 100
+  ensure:
+    thresholds:
+      - http.response_time.p99: 100
+      - http.response_time.p95: 75
+scenarios:
+  - flow:
+      - get:
+          url: "/Bundle"
+          headers:
+            nhsd-nhslogin-user: "P9:9912003071"
+            x-request-id: "{{guid}}"
+          beforeRequest: generateGUID

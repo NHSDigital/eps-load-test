@@ -1,0 +1,13 @@
+{
+  "workspaces": [
+    "packages/dummySpine"
+  ],
+  "dependencies": {
+    "artillery": "^2.0.10"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.137",
+    "aws-lambda": "^1.0.7",
+    "esbuild": "^0.20.2"
+  }
+}
