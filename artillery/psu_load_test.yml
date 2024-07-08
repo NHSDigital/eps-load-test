@@ -1,0 +1,31 @@
+config:
+  target: https://internal-dev.api.service.nhs.uk/
+  processor: "./helper.mjs"
+  plugins:
+    expect: {}
+    apdex: {}
+    ensure:
+      thresholds:
+        - http.response_time.p99: 500
+        - http.response_time.p95: 400
+        - maxErrorRate: 0
+  phases:
+    - duration: 120
+      arrivalRate: 1
+      maxVusers: 2
+      name: running phase
+scenarios:
+  - name: "call psu"
+    beforeRequest: "getPSUParams"
+    flow:
+      - loop:
+          - post:
+              url: "/prescription-status-update/"
+              headers:
+                Authorization: "Bearer {{ authToken }}"
+                x-request-id: "{{ x_request_id }}"
+                x-correlation-id: "{{ x_correlation_id }}"
+              expect:
+                - statusCode: 201
+          - think: 30
+        whileTrue: "hasValidToken"
