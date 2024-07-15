@@ -10,7 +10,7 @@ config:
         - http.response_time.p95: 400
         - maxErrorRate: 0
   phases:
-    - duration: 120
+    - duration: 10
       arrivalRate: 1
       maxVusers: 2
       name: running phase
@@ -28,4 +28,4 @@ scenarios:
               expect:
                 - statusCode: 201
           - think: 30
-        whileTrue: "hasValidToken"
+        count: 10

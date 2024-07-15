@@ -1,0 +1,30 @@
+name: Cloudformation Actions
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+
+jobs:
+  run_artillery:
+    name: Run Artillery
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BRANCH_NAME }}
+
+      - name: Assume artillery runner role
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-2
+          role-to-assume: ${{ secrets.DEV_ARTILLERY_RUNNER_ROLE }}
+          role-session-name: github-actions-artillery
+
+      - name: Run load tests
+        shell: bash
+        run: ./script/psu_load_test.sh
