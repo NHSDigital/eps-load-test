@@ -2,8 +2,6 @@ name: Cloudformation Actions
 
 on:
   workflow_dispatch:
-  pull_request:
-    branches: [main]
 
 jobs:
   run_artillery:
@@ -27,4 +25,4 @@ jobs:
 
       - name: Run load tests
         shell: bash
-        run: ./script/psu_load_test.sh
+        run: ./scripts/psu_load_test.sh
