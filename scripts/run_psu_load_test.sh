@@ -15,6 +15,7 @@ npx artillery run-fargate \
     --secret psu_private_key \
     --secret psu_kid \
     --region eu-west-2 \
+    --cluster artilleryio-cluster \
     --security-group-ids ${security_group} \
     --subnet-ids ${vpc_subnets} \
     --task-role-name ${artillery_worker_role_name} \
