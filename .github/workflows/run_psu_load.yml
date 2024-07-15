@@ -27,4 +27,4 @@ jobs:
 
       - name: Run load tests
         shell: bash
-        run: ./scripts/psu_load_test.sh
+        run: ./scripts/run_psu_load_test.sh
