@@ -10,7 +10,7 @@ export artillery_worker_role_name
 
 
 #artillery run artillery/psu_load_test.yml
-artillery run-fargate \
+npx artillery run-fargate \
     --secret psu_api_key \
     --secret psu_private_key \
     --secret psu_kid \
