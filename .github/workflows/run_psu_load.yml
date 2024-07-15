@@ -1,4 +1,4 @@
-name: Cloudformation Actions
+name: Run psu load test
 
 on:
   workflow_dispatch:
