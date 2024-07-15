@@ -18,6 +18,30 @@ jobs:
         with:
           ref: ${{ env.BRANCH_NAME }}
 
+      - name: Install asdf
+        uses: asdf-vm/actions/setup@05e0d2ed97b598bfce82fd30daf324ae0c4570e6
+        with:
+          asdf_branch: v0.11.3
+      
+      - name: Cache asdf
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.asdf
+          key: ${{ runner.os }}-asdf-${{ hashFiles('**/.tool-versions') }}
+          restore-keys: |
+            ${{ runner.os }}-asdf-
+      
+      - name: Install asdf dependencies in .tool-versions
+        uses: asdf-vm/actions/install@05e0d2ed97b598bfce82fd30daf324ae0c4570e6
+        with:
+          asdf_branch: v0.11.3
+        env:
+            PYTHON_CONFIGURE_OPTS: --enable-shared
+
+      - name: Install Dependencies
+        run: make install
+
       - name: Assume artillery runner role
         uses: aws-actions/configure-aws-credentials@v4
         with:
