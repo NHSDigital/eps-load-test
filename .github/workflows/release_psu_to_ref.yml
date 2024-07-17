@@ -15,6 +15,14 @@ jobs:
         contents: read
   
     steps:
-      - name: hello world
-        shell: bash
-        run: echo "hello wold"
+      - name: download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: packaged_code 
+          path: .
+          github-token: ${{ secrets.GH_PAT }}
+          repository: NHSDigital/eps-prescription-status-update-api
+          run-id: ${{ inputs.psuWorkflowRunID }}
+
+      - name: Display structure of downloaded files
+        run: ls -R
