@@ -3,7 +3,7 @@
     "packages/dummySpine"
   ],
   "dependencies": {
-    "artillery": "^2.0.17",
+    "artillery": "^2.0.18",
     "axios": "^1.7.2",
     "jsonwebtoken": "^9.0.2"
   },
