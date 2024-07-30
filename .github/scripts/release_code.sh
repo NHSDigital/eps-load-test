@@ -14,4 +14,4 @@ LATEST_TRUSTSTORE_VERSION=$(aws s3api list-object-versions --bucket "${TRUSTSTOR
 export LATEST_TRUSTSTORE_VERSION
 
 cd ../../.aws-sam/build || exit
-make sam-deploy-psu-package
+make sam-deploy-package
