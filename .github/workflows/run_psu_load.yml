@@ -2,6 +2,11 @@ name: Run psu load test
 
 on:
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to run tests against. Allowed values are dev or ref'
+        required: true
+        default: 'dev'
 
 jobs:
   run_artillery:
@@ -49,4 +54,4 @@ jobs:
 
       - name: Run load tests
         shell: bash
-        run: ./scripts/run_psu_load_test.sh
+        run: ./scripts/run_psu_load_test.sh "${{ github.event.inputs.environment }}

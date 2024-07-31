@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+environment=$1
 security_group=$(aws cloudformation list-exports --output json | jq -r '.Exports[] | select(.Name == "vpc-resources:VpcDefaultSecurityGroup") | .Value' | grep -o '[^:]*$')
 export security_group
 vpc_subnets=$(aws cloudformation list-exports --output json | jq -r '.Exports[] | select(.Name == "vpc-resources:PrivateSubnets") | .Value' | grep -o '[^:]*$')
@@ -11,6 +12,7 @@ export artillery_worker_role_name
 
 #artillery run artillery/psu_load_test.yml
 npx artillery run-fargate \
+    --environment "${environment}" \
     --secret psu_api_key \
     --secret psu_private_key \
     --secret psu_kid \

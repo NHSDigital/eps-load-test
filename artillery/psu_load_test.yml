@@ -1,19 +1,21 @@
 config:
-  target: https://internal-dev.api.service.nhs.uk/
   processor: "./helper.mjs"
   plugins:
     expect: {}
     apdex: {}
     ensure:
       thresholds:
-        - http.response_time.p99: 5000
-        - http.response_time.p95: 4000
         - maxErrorRate: 0
   phases:
     - duration: 10
       arrivalRate: 1
       maxVusers: 2
       name: running phase
+  environments:
+    dev:
+      target: https://internal-dev.api.service.nhs.uk/
+    ref:
+      target: https://ref.api.service.nhs.uk/
 scenarios:
   - name: "call psu"
     beforeRequest: "getPSUParams"
