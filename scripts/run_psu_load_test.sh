@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 
 environment=$1
+
+if ! [[ "$environment" =~ ^(dev|ref)$ ]]
+then 
+    echo "environment must be dev or ref"
+    exit 1
+fi
+
 security_group=$(aws cloudformation list-exports --output json | jq -r '.Exports[] | select(.Name == "vpc-resources:VpcDefaultSecurityGroup") | .Value' | grep -o '[^:]*$')
 export security_group
 vpc_subnets=$(aws cloudformation list-exports --output json | jq -r '.Exports[] | select(.Name == "vpc-resources:PrivateSubnets") | .Value' | grep -o '[^:]*$')
