@@ -35,7 +35,8 @@
         "streetsidesoftware.code-spell-checker",
         "timonwong.shellcheck",
         "mkhl.direnv",
-        "github.vscode-github-actions"
+        "github.vscode-github-actions",
+        "artilleryio.vscode-artillery"
       ],
       "settings": {
         "python.defaultInterpreterPath": "/workspaces/eps-prescription-status-update/.venv/bin/python",

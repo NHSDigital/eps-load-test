@@ -20,3 +20,14 @@ sam-sync: guard-AWS_DEFAULT_PROFILE guard-stack_name compile
 		--template-file SAMtemplates/main_template.yaml \
 		--parameter-overrides \
 			  EnableSplunk=false
+
+install: install-node
+
+install-python:
+	poetry install
+
+install-node:
+	npm ci
+
+install-hooks: install-python
+	poetry run pre-commit install --install-hooks --overwrite
