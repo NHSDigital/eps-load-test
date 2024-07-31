@@ -1,0 +1,20 @@
+name: 'Release psu to ref'
+
+on:
+  workflow_dispatch:
+    inputs:
+        psuWorkflowRunID:
+          description: 'The workflow run id of a psu run to download packaged code from'
+          required: true
+
+jobs:
+  release_to_ref:
+    runs-on: ubuntu-latest
+    permissions:
+        id-token: write
+        contents: read
+  
+    steps:
+      - name: hello world
+        shell: bash
+        run: echo "hello wold"
