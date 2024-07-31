@@ -45,11 +45,20 @@ jobs:
       - name: Install Dependencies
         run: make install
 
-      - name: Assume artillery runner role
+      - name: Assume dev artillery runner role
+        if: github.event.inputs.environment == 'dev'
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: eu-west-2
           role-to-assume: ${{ secrets.DEV_ARTILLERY_RUNNER_ROLE }}
+          role-session-name: github-actions-artillery
+
+      - name: Assume ref artillery runner role
+        if: github.event.inputs.environment == 'ref'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-2
+          role-to-assume: ${{ secrets.REF_ARTILLERY_RUNNER_ROLE }}
           role-session-name: github-actions-artillery
 
       - name: Run load tests
