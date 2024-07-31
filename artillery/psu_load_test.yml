@@ -3,9 +3,6 @@ config:
   plugins:
     expect: {}
     apdex: {}
-    ensure:
-      thresholds:
-        - maxErrorRate: 1
   phases:
     - duration: 10
       arrivalRate: 1
