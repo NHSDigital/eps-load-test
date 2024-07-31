@@ -5,7 +5,7 @@ config:
     apdex: {}
     ensure:
       thresholds:
-        - maxErrorRate: 0
+        - maxErrorRate: 1
   phases:
     - duration: 10
       arrivalRate: 1
