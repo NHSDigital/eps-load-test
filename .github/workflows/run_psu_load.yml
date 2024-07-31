@@ -54,4 +54,4 @@ jobs:
 
       - name: Run load tests
         shell: bash
-        run: ./scripts/run_psu_load_test.sh "${{ github.event.inputs.environment }}
+        run: ./scripts/run_psu_load_test.sh "${{ github.event.inputs.environment }}"
