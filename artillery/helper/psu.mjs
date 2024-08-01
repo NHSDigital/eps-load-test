@@ -100,7 +100,7 @@ export async function getPSUParams(requestParams, vuContext, events) {
   if (!vuContext.tokenExpiryTime || vuContext.tokenExpiryTime < Date.now()) {
     logger.info("Fetching new token")
     logger.info(`  current expiry time: ${vuContext.tokenExpiryTime}`)
-    const response = await getAccessToken(logger, vuContext.target)
+    const response = await getAccessToken(logger, vuContext.vars.target)
     vuContext.tokenExpiryTime = Date.now() + response.expires_in * 1000
     vuContext.vars.authToken = response.access_token
     logger.info(`  new expiry time: ${vuContext.tokenExpiryTime}`)
