@@ -12,7 +12,7 @@ const privateKey = process.env.psu_private_key
 // const auth_url = "https://internal-dev.api.service.nhs.uk/oauth2/token"
 
 function createSignedJWT(baseTarget) {
-  const authURL = `${baseTarget}/oauth2/token`
+  const authURL = `${baseTarget}oauth2/token`
   const header = {
     typ: "JWT",
     alg: "RS512",
