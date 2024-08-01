@@ -35,7 +35,7 @@ function createSignedJWT(baseTarget) {
 
 export async function getAccessToken(logger, baseTarget) {
   const authURL = `${baseTarget}oauth2/token`
-  const signedJWT = createSignedJWT()
+  const signedJWT = createSignedJWT(baseTarget)
   const payload = {
     grant_type: "client_credentials",
     client_assertion_type: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
