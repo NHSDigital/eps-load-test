@@ -97,6 +97,7 @@ export function hasValidToken(vuContext, next) {
 }
 
 export async function getPSUParams(requestParams, vuContext, events) {
+  logger.info(vuContext.vars.target)
   if (!vuContext.tokenExpiryTime || vuContext.tokenExpiryTime < Date.now()) {
     logger.info("Fetching new token")
     logger.info(`  current expiry time: ${vuContext.tokenExpiryTime}`)
