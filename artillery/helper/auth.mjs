@@ -9,9 +9,10 @@ import {fileURLToPath} from "url"
 
 // const privateKey = fs.readFileSync(`${__dirname}/private.key`, "utf8")
 const privateKey = process.env.psu_private_key
-const auth_url = "https://internal-dev.api.service.nhs.uk/oauth2/token"
+// const auth_url = "https://internal-dev.api.service.nhs.uk/oauth2/token"
 
-function createSignedJWT() {
+function createSignedJWT(baseTarget) {
+  const authURL = `${baseTarget}/oauth2/token`
   const header = {
     typ: "JWT",
     alg: "RS512",
@@ -24,7 +25,7 @@ function createSignedJWT() {
     sub: process.env.psu_api_key,
     iss: process.env.psu_api_key,
     jti: jti_value,
-    aud: auth_url,
+    aud: authURL,
     exp: currentTimestamp + 180 // expiry time is 180 seconds from time of creation
   }
 
@@ -32,7 +33,8 @@ function createSignedJWT() {
   return signedJWT
 }
 
-export async function getAccessToken(logger) {
+export async function getAccessToken(logger, baseTarget) {
+  const authURL = `${baseTarget}/oauth2/token`
   const signedJWT = createSignedJWT()
   const payload = {
     grant_type: "client_credentials",
@@ -40,7 +42,7 @@ export async function getAccessToken(logger) {
     client_assertion: signedJWT
   }
   try {
-    const response = await axios.post(auth_url, payload, {
+    const response = await axios.post(authURL, payload, {
       headers: {"content-type": "application/x-www-form-urlencoded"}
     })
     logger.info(`response data: ${JSON.stringify(response.data)}`)
