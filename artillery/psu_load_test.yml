@@ -4,12 +4,9 @@ config:
     expect: {}
     apdex: {}
   phases:
-    - duration: 10
-      arrivalRate: 1
-      name: ramp up phase
     - duration: 300
-      arrivalRate: 1
-      name: running phase
+      arrivalCount: 90
+      name: ramp up phase
   environments:
     dev:
       target: https://internal-dev.api.service.nhs.uk/
@@ -28,5 +25,5 @@ scenarios:
                 x-correlation-id: "{{ x_correlation_id }}"
               expect:
                 - statusCode: 201
-          - think: 10
+          - think: 1
         whileTrue: "hasValidToken"
