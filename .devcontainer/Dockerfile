@@ -27,7 +27,7 @@ RUN wget -O /tmp/aws-sam-cli.zip https://github.com/aws/aws-sam-cli/releases/lat
 USER vscode
 
 # Install ASDF
-RUN git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.11.3; \
+RUN git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.14.0; \
     echo '. $HOME/.asdf/asdf.sh' >> ~/.bashrc; \
     echo '. $HOME/.asdf/completions/asdf.bash' >> ~/.bashrc; \
     echo '# Install Ruby Gems to ~/gems' >> ~/.bashrc; \

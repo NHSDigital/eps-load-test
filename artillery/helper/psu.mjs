@@ -1,5 +1,7 @@
 import {v4 as uuidv4} from "uuid"
 import {getAccessToken} from "./auth.mjs"
+import pino from "pino"
+const logger = pino()
 
 function getBody() {
   const task_identifier = uuidv4()
@@ -96,15 +98,15 @@ export function hasValidToken(vuContext, next) {
 
 export async function getPSUParams(requestParams, vuContext, events) {
   if (!vuContext.tokenExpiryTime || vuContext.tokenExpiryTime < Date.now()) {
-    console.log("Fetching new token")
-    console.log(`  current expiry time: ${vuContext.tokenExpiryTime}`)
-    const response = await getAccessToken()
+    logger.info("Fetching new token")
+    logger.info(`  current expiry time: ${vuContext.tokenExpiryTime}`)
+    const response = await getAccessToken(logger)
     vuContext.tokenExpiryTime = Date.now() + response.expires_in * 1000
     vuContext.vars.authToken = response.access_token
-    console.log(`  new expiry time: ${vuContext.tokenExpiryTime}`)
-    console.log(`  new token: ${vuContext.vars.authToken}`)
+    logger.info(`  new expiry time: ${vuContext.tokenExpiryTime}`)
+    logger.info(`  new token: ${vuContext.vars.authToken}`)
   } else {
-    console.log("  using cached token")
+    logger.info("  using cached token")
   }
   const body = getBody()
   requestParams.json = body

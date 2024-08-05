@@ -21,9 +21,6 @@ sam-sync: guard-AWS_DEFAULT_PROFILE guard-stack_name compile
 		--parameter-overrides \
 			  EnableSplunk=false
 
-install-python:
-	poetry install
-
 sam-deploy-psu-package: guard-artifact_bucket guard-artifact_bucket_prefix guard-stack_name guard-template_file guard-cloud_formation_execution_role guard-LATEST_TRUSTSTORE_VERSION guard-enable_mutual_tls guard-DYNAMODB_AUTOSCALE guard-VERSION_NUMBER guard-COMMIT_ID guard-VERSION_NUMBER guard-LOG_RETENTION_DAYS guard-TARGET_ENVIRONMENT
 	sam deploy \
 		--template-file $$template_file \
@@ -48,4 +45,15 @@ sam-deploy-psu-package: guard-artifact_bucket guard-artifact_bucket_prefix guard
 			  LogLevel=$$LOG_LEVEL \
 			  LogRetentionInDays=$$LOG_RETENTION_DAYS \
 			  Env=$$TARGET_ENVIRONMENT \
-			  DeployCheckPrescriptionStatusUpdate=$$DEPLOY_CHECK_PRESCRIPTION_STATUS_UPDATE 
+			  DeployCheckPrescriptionStatusUpdate=$$DEPLOY_CHECK_PRESCRIPTION_STATUS_UPDATE
+
+install: install-node
+
+install-python:
+	poetry install
+
+install-node:
+	npm ci
+
+install-hooks: install-python
+	poetry run pre-commit install --install-hooks --overwrite
