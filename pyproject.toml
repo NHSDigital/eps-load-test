@@ -30,6 +30,7 @@ semver = "^3.0.2"
 gitpython = "^3.1.43"
 pre-commit = "^3.5.0"
 cfn-lint = "^1.6.1"
+proxygen-cli = "^2.1.14"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^5.0.4"
