@@ -6,7 +6,9 @@ config:
   phases:
     - duration: 10
       arrivalRate: 1
-      maxVusers: 2
+      name: ramp up phase
+    - duration: 300
+      arrivalRate: 1
       name: running phase
   environments:
     dev:
@@ -26,5 +28,5 @@ scenarios:
                 x-correlation-id: "{{ x_correlation_id }}"
               expect:
                 - statusCode: 201
-          - think: 30
-        count: 10
+          - think: 10
+        whileTrue: "hasValidToken"
