@@ -72,3 +72,4 @@ jobs:
           name: test_report
           path: |
             psu_load_test.json
+            psu_load_test.json.html

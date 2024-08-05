@@ -30,3 +30,5 @@ npx artillery run-fargate \
     --task-role-name ${artillery_worker_role_name} \
     --output psu_load_test.json \
     artillery/psu_load_test.yml
+
+npx artillery report psu_load_test.json 
