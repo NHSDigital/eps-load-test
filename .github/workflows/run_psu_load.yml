@@ -64,3 +64,11 @@ jobs:
       - name: Run load tests
         shell: bash
         run: ./scripts/run_psu_load_test.sh "${{ github.event.inputs.environment }}"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        name: Upload test_report
+        with:
+          name: test_report
+          path: |
+            psu_load_test.json
