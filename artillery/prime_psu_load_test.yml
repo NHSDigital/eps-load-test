@@ -4,11 +4,8 @@ config:
     expect: {}
     apdex: {}
   phases:
-    # as long as the duration here is less than 10 minutes
-    # we can set the arrival count to what we want the TPS to be
-    # as it ramps up to this level and we have a 1 second delay in the flow between each request
-    - duration: 300
-      arrivalCount: 90
+    - duration: 10
+      arrivalRate: 1
       name: ramp up phase
   environments:
     dev:
@@ -16,12 +13,9 @@ config:
     ref:
       target: https://ref.api.service.nhs.uk/
 scenarios:
-  # this is the main flow
   - name: "call psu"
-    # before each request see if we need to get a new oauth 2.0 token
     beforeRequest: "getPSUParams"
     flow:
-      # we use a loop so we can re-use the oauth 2.0 token
       - loop:
           - post:
               url: "/prescription-status-update/"
@@ -31,8 +25,5 @@ scenarios:
                 x-correlation-id: "{{ x_correlation_id }}"
               expect:
                 - statusCode: 201
-          # we have a delay of 1 second between each request
           - think: 1
-        # and we keep looping while we have a valid oauth 2.0 token
-        # this is about 10 minutes
-        whileTrue: "hasValidToken"
+        count: 10

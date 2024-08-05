@@ -16,8 +16,7 @@ export vpc_subnets
 artillery_worker_role_name=$(aws cloudformation list-exports --output json | jq -r '.Exports[] | select(.Name == "artillery-resources:ArtilleryWorkerRoleName") | .Value' | grep -o '[^:]*$')
 export artillery_worker_role_name
 
-
-#artillery run artillery/psu_load_test.yml
+# do a small test to get lambdas warmed up
 npx artillery run-fargate \
     --environment "${environment}" \
     --secret psu_api_key \
@@ -28,6 +27,20 @@ npx artillery run-fargate \
     --security-group-ids ${security_group} \
     --subnet-ids ${vpc_subnets} \
     --task-role-name ${artillery_worker_role_name} \
+    artillery/prime_psu_load_test.yml
+
+# the real test
+npx artillery run-fargate \
+    --environment "${environment}" \
+    --secret psu_api_key \
+    --secret psu_private_key \
+    --secret psu_kid \
+    --region eu-west-2 \
+    --cluster artilleryio-cluster \
+    --security-group-ids ${security_group} \
+    --subnet-ids ${vpc_subnets} \
+    --task-role-name ${artillery_worker_role_name} \
+    --count 10 \
     --output psu_load_test.json \
     artillery/psu_load_test.yml
 
