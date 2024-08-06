@@ -22,6 +22,17 @@ if [ -z "${client_cert}" ]; then
     exit 1
 fi
 
+put_secret_lambda=lambda-resources-ProxygenPTLMTLSSecretPut
+instance_put_lambda=lambda-resources-ProxygenPTLInstancePut
+spec_publish_lambda=lambda-resources-ProxygenPTLSpecPublish
+
+if ! [[ "$APIGEE_ENVIRONMENT" =~ ^(int|sandbox|prod)$ ]]; then 
+    put_secret_lambda=lambda-resources-ProxygenProdMTLSSecretPut
+    instance_put_lambda=lambda-resources-ProxygenProdInstancePut
+    spec_publish_lambda=lambda-resources-ProxygenProdSpecPublish
+fi
+
+
 is_pull_request=false
 instance_suffix=""
 if [[ ${STACK_NAME} == psu-pr-* ]]; then
@@ -117,7 +128,7 @@ if [[ "${is_pull_request}" == "false" ]]; then
             --arg proxygenSecretName "${proxygen_private_key_arn}" \
             '{apiName: $apiName, environment: $environment, secretName: $secretName, secretKey: $secretKey, secretCert: $secretCert, kid, $kid, proxygenSecretName: $proxygenSecretName}' > payload.json
 
-        aws lambda invoke --function-name "lambda-resources-ProxygenPTLMTLSSecretPut" --cli-binary-format raw-in-base64-out --payload file://payload.json out.txt > response.json
+        aws lambda invoke --function-name "${put_secret_lambda}" --cli-binary-format raw-in-base64-out --payload file://payload.json out.txt > response.json
         if eval "cat response.json | jq -e '.FunctionError' >/dev/null"; then
             echo 'Error calling lambda'
             cat out.txt
@@ -126,7 +137,7 @@ if [[ "${is_pull_request}" == "false" ]]; then
         echo "Secret stored succesfully"
 
     else
-        echo "Would call lambda-resources-ProxygenPTLMTLSSecretPut"
+        echo "Would call ${put_secret_lambda}"
     fi
 fi
 
@@ -142,7 +153,7 @@ if [[ "${DRY_RUN}" == "false" ]]; then
         --arg proxygenSecretName "${proxygen_private_key_arn}" \
         '{apiName: $apiName, environment: $environment, specDefinition: $spec, instance: $instance, kid: $kid, proxygenSecretName: $proxygenSecretName}' > payload.json
 
-    aws lambda invoke --function-name "lambda-resources-ProxygenPTLInstancePut" --cli-binary-format raw-in-base64-out --payload file://payload.json out.txt > response.json
+    aws lambda invoke --function-name "${instance_put_lambda}" --cli-binary-format raw-in-base64-out --payload file://payload.json out.txt > response.json
 
     if eval "cat response.json | jq -e '.FunctionError' >/dev/null"; then
         echo 'Error calling lambda'
@@ -151,10 +162,10 @@ if [[ "${DRY_RUN}" == "false" ]]; then
     fi
     echo "Instance deployed"
 else
-    echo "Would call lambda-resources-ProxygenPTLInstancePut"
+    echo "Would call ${instance_put_lambda}"
 fi
 
-if [[ "${APIGEE_ENVIRONMENT}" == "internal-dev" ]]; then
+if [[ "${APIGEE_ENVIRONMENT}" == "int" ]]; then
     echo
     echo "Deploy the API spec if in the int environment"
     if [[ "${DRY_RUN}" == "false" ]]; then
@@ -166,10 +177,9 @@ if [[ "${APIGEE_ENVIRONMENT}" == "internal-dev" ]]; then
             --arg proxygenSecretName "${proxygen_private_key_arn}" \
             '{apiName: $apiName, environment: $environment, specDefinition: $spec, instance: $instance, kid: $kid, proxygenSecretName: $proxygenSecretName}' > payload.json
 
-    aws lambda invoke --function-name "lambda-resources-ProxygenPTLSpecPublish" --cli-binary-format raw-in-base64-out --payload file://payload.json out.txt > response.json
-
+        aws lambda invoke --function-name "${spec_publish_lambda}" --cli-binary-format raw-in-base64-out --payload file://payload.json out.txt > response.json
     else
-        echo "Would call lambda-resources-ProxygenPTLSpecPublish"
+        echo "Would call ${spec_publish_lambda}"
     fi
 fi
 
@@ -177,9 +187,16 @@ if [[ "${APIGEE_ENVIRONMENT}" == "internal-dev" && "${is_pull_request}" == "fals
     echo
     echo "Deploy the API spec to uat if in the internal-dev environment"
     if [[ "${DRY_RUN}" == "false" ]]; then
-        "${PROXYGEN_PATH}" spec publish --uat --no-confirm "${SPEC_PATH}"
+        jq -n --argfile spec "${SPEC_PATH}" \
+            --arg apiName "${apigee_api}" \
+            --arg environment "uat" \
+            --arg instance "${instance}" \
+            --arg kid "${PROXYGEN_KID}" \
+            --arg proxygenSecretName "${proxygen_private_key_arn}" \
+            '{apiName: $apiName, environment: $environment, specDefinition: $spec, instance: $instance, kid: $kid, proxygenSecretName: $proxygenSecretName}' > payload.json
+
+        aws lambda invoke --function-name "${spec_publish_lambda}" --cli-binary-format raw-in-base64-out --payload file://payload.json out.txt > response.json
     else
-        echo "Would run this command"
-        echo "${PROXYGEN_PATH} spec publish --uat --no-confirm ${SPEC_PATH}"
+        echo "Would call ${spec_publish_lambda}"
     fi
 fi
