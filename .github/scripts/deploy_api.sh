@@ -26,7 +26,7 @@ put_secret_lambda=lambda-resources-ProxygenPTLMTLSSecretPut
 instance_put_lambda=lambda-resources-ProxygenPTLInstancePut
 spec_publish_lambda=lambda-resources-ProxygenPTLSpecPublish
 
-if ! [[ "$APIGEE_ENVIRONMENT" =~ ^(int|sandbox|prod)$ ]]; then 
+if [[ "$APIGEE_ENVIRONMENT" =~ ^(int|sandbox|prod)$ ]]; then 
     put_secret_lambda=lambda-resources-ProxygenProdMTLSSecretPut
     instance_put_lambda=lambda-resources-ProxygenProdInstancePut
     spec_publish_lambda=lambda-resources-ProxygenProdSpecPublish
