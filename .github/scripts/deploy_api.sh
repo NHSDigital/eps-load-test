@@ -13,6 +13,15 @@ echo "Proxygen KID: ${PROXYGEN_KID}"
 echo "Deploy Check Prescription Status Update: ${DEPLOY_CHECK_PRESCRIPTION_STATUS_UPDATE}"
 echo "Dry run: ${DRY_RUN}"
 
+if [ -z "${client_private_key}" ]; then
+    echo "client_private_key is unset or set to the empty string"
+    exit 1
+fi
+if [ -z "${client_cert}" ]; then
+    echo "client_cert is unset or set to the empty string"
+    exit 1
+fi
+
 is_pull_request=false
 instance_suffix=""
 if [[ ${STACK_NAME} == psu-pr-* ]]; then
@@ -94,11 +103,6 @@ echo "Retrieving proxygen credentials"
 
 # Retrieve the proxygen private key and client private key and cert from AWS Secrets Manager
 proxygen_private_key_arn=$(aws cloudformation list-exports --query "Exports[?Name=='account-resources:${PROXYGEN_PRIVATE_KEY_NAME}'].Value" --output text)
-client_private_key_arn=$(aws cloudformation list-exports --query "Exports[?Name=='account-resources:PsuClientKeySecret'].Value" --output text)
-client_cert_arn=$(aws cloudformation list-exports --query "Exports[?Name=='account-resources:PsuClientCertSecret'].Value" --output text)
-
-client_private_key=$(aws secretsmanager get-secret-value --secret-id "${client_private_key_arn}" --query SecretString --output text)
-client_cert=$(aws secretsmanager get-secret-value --secret-id "${client_cert_arn}" --query SecretString --output text)
 
 if [[ "${is_pull_request}" == "false" ]]; then
     echo
