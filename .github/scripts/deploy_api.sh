@@ -13,6 +13,10 @@ echo "Proxygen KID: ${PROXYGEN_KID}"
 echo "Deploy Check Prescription Status Update: ${DEPLOY_CHECK_PRESCRIPTION_STATUS_UPDATE}"
 echo "Dry run: ${DRY_RUN}"
 
+
+client_private_key=$(cat ~/.proxygen/tmp/client_private_key)
+client_cert=$(cat ~/.proxygen/tmp/client_cert)
+
 if [ -z "${client_private_key}" ]; then
     echo "client_private_key is unset or set to the empty string"
     exit 1

@@ -99,20 +99,11 @@ jobs:
       - name: get mtls secrets
         shell: bash
         run: |
+          mkdir -p ~/.proxygen/tmp
           client_private_key_arn=$(aws cloudformation list-exports --query "Exports[?Name=='account-resources:PsuClientKeySecret'].Value" --output text)
           client_cert_arn=$(aws cloudformation list-exports --query "Exports[?Name=='account-resources:PsuClientCertSecret'].Value" --output text)
-          client_private_key=$(aws secretsmanager get-secret-value --secret-id "${client_private_key_arn}" --query SecretString --output text)
-          client_cert=$(aws secretsmanager get-secret-value --secret-id "${client_cert_arn}" --query SecretString --output text)
-          {
-            echo 'client_private_key<<EOF'
-            echo ${client_private_key}
-            echo EOF
-          } >> "$GITHUB_ENV"
-          {
-            echo 'client_cert<<EOF'
-            echo ${client_cert}
-            echo EOF
-          } >> "$GITHUB_ENV"
+          aws secretsmanager get-secret-value --secret-id "${client_private_key_arn}" --query SecretString --output text > ~/.proxygen/tmp/client_private_key
+          aws secretsmanager get-secret-value --secret-id "${client_cert_arn}" --query SecretString --output text > ~/.proxygen/tmp/client_cert
 
       - name: Configure AWS Credentials for api release
         uses: aws-actions/configure-aws-credentials@v4
