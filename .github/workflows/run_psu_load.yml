@@ -80,7 +80,7 @@ jobs:
           duration: ${{ github.event.inputs.duration }}
         run: |
           ./scripts/run_psu_load_test.sh \
-            "${{ github.event.inputs.environment }}"
+            "${{ github.event.inputs.environment }}" \
             "${{ github.event.inputs.loadGeneratorCount }}"
 
       - uses: actions/upload-artifact@v4
