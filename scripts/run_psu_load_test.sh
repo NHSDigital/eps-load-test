@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 environment=$1
+loadGeneratorCount=$2
 
 if ! [[ "$environment" =~ ^(dev|ref)$ ]]
 then 
@@ -40,7 +41,7 @@ npx artillery run-fargate \
     --security-group-ids ${security_group} \
     --subnet-ids ${vpc_subnets} \
     --task-role-name ${artillery_worker_role_name} \
-    --count 5 \
+    --count ${loadGeneratorCount} \
     --output psu_load_test.json \
     artillery/psu_load_test.yml
 

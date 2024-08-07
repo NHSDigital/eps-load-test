@@ -7,6 +7,18 @@ on:
         description: 'Environment to run tests against. Allowed values are dev or ref'
         required: true
         default: 'dev'
+      maxVusers:
+        description: 'Maximum number of vusers to create per load generator'
+        required: true
+        default: '45'
+      duration:
+        description: 'The duration to keep creating users for. Note - it may be up to 10 minutes after the last user was created that the test finishes'
+        required: true
+        default: '300'
+      loadGeneratorCount:
+        description: 'The number of load generators to launch.'
+        required: true
+        default: '2'
 
 jobs:
   run_artillery:
@@ -63,7 +75,13 @@ jobs:
 
       - name: Run load tests
         shell: bash
-        run: ./scripts/run_psu_load_test.sh "${{ github.event.inputs.environment }}"
+        env:
+          maxVusers: ${{ github.event.inputs.maxVusers }}
+          duration: ${{ github.event.inputs.duration }}
+        run: |
+          ./scripts/run_psu_load_test.sh \
+            "${{ github.event.inputs.environment }}"
+            "${{ github.event.inputs.loadGeneratorCount }}"
 
       - uses: actions/upload-artifact@v4
         if: always()
