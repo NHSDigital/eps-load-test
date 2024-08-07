@@ -9,7 +9,7 @@ config:
     # as it ramps up to this level and we have a 1 second delay in the flow between each request
     - duration: 300
       arrivalRate: 1
-      rampTo: 45
+      maxVusers: 45
       name: run phase
   environments:
     dev:
