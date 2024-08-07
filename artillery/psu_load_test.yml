@@ -9,8 +9,8 @@ config:
     # as it ramps up to this level and we have a 1 second delay in the flow between each request
     - duration: 300
       arrivalRate: 1
-      maxVusers: 90
-      name: ramp up phase
+      rampTo: 90
+      name: run phase
   environments:
     dev:
       target: https://internal-dev.api.service.nhs.uk/
