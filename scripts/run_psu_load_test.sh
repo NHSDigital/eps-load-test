@@ -40,7 +40,7 @@ npx artillery run-fargate \
     --security-group-ids ${security_group} \
     --subnet-ids ${vpc_subnets} \
     --task-role-name ${artillery_worker_role_name} \
-    --count 1 \
+    --count 2 \
     --output psu_load_test.json \
     artillery/psu_load_test.yml
 
