@@ -6,7 +6,7 @@ on:
       environment:
         description: 'Environment to run tests against. Allowed values are dev or ref'
         required: true
-        default: 'dev'
+        default: 'ref'
       maxVusers:
         description: 'Maximum number of vusers to create per load generator'
         required: true
@@ -73,6 +73,12 @@ jobs:
           role-to-assume: ${{ secrets.REF_ARTILLERY_RUNNER_ROLE }}
           role-session-name: github-actions-artillery
 
+      - name: Run primer load tests
+        shell: bash
+        run: |
+          ./scripts/run_primer_psu_load_test.sh \
+            "${{ github.event.inputs.environment }}" 
+  
       - name: Run load tests
         shell: bash
         env:

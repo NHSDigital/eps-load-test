@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 environment=$1
-loadGeneratorCount=$2
 
 if ! [[ "$environment" =~ ^(dev|ref)$ ]]
 then 
@@ -17,7 +16,7 @@ export vpc_subnets
 artillery_worker_role_name=$(aws cloudformation list-exports --output json | jq -r '.Exports[] | select(.Name == "artillery-resources:ArtilleryWorkerRoleName") | .Value' | grep -o '[^:]*$')
 export artillery_worker_role_name
 
-# the real test
+# do a small test to get lambdas warmed up
 npx artillery run-fargate \
     --environment "${environment}" \
     --secret psu_api_key \
@@ -28,8 +27,5 @@ npx artillery run-fargate \
     --security-group-ids ${security_group} \
     --subnet-ids ${vpc_subnets} \
     --task-role-name ${artillery_worker_role_name} \
-    --count ${loadGeneratorCount} \
-    --output psu_load_test.json \
-    artillery/psu_load_test.yml
+    artillery/prime_psu_load_test.yml
 
-npx artillery report psu_load_test.json 
