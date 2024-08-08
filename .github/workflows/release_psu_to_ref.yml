@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
         psuWorkflowRunID:
-          description: 'The workflow run id of a psu run to download packaged code from'
+          description: 'The github workflow run id of a psu build and deployment to release to REF environment'
           required: true
 
 jobs:
@@ -15,6 +15,11 @@ jobs:
         contents: read
   
     steps:
+      - name: Show input params
+        shell: bash
+        run: |
+          echo "## psuWorkflowRunID : ${{ github.event.inputs.psuWorkflowRunID }}" >> "$GITHUB_STEP_SUMMARY"
+
       - name: Checkout local github actions
         uses: actions/checkout@v4
         with:
@@ -78,12 +83,6 @@ jobs:
           echo "CPSU Specification location: $CPSU_SPEC_PATH"
           echo "CPSU_SPEC_PATH=${CPSU_SPEC_PATH}" >> "$GITHUB_ENV"
 
-      - name: Export proxygen path
-        run: |
-          PROXYGEN_PATH=$(poetry run which proxygen)
-          echo "Proxygen location: $PROXYGEN_PATH"
-          echo "PROXYGEN_PATH=${PROXYGEN_PATH}" >> "$GITHUB_ENV"
-
       - name: release code
         shell: bash
         working-directory: .github/scripts
@@ -102,22 +101,38 @@ jobs:
           DEPLOY_CHECK_PRESCRIPTION_STATUS_UPDATE: true
         run: ./release_code.sh
 
-      # - name: Deploy PSU API
-      #   shell: bash
-      #   working-directory: .github/scripts
-      #   env:
-      #     API_TYPE: standard
-      #     VERSION_NUMBER: load_test_${{ github.run_id }}
-      #     PROXYGEN_PATH: ${{ env.PROXYGEN_PATH }}
-      #     SPEC_PATH: ${{ env.SPEC_PATH }}
-      #     STACK_NAME: psu
-      #     AWS_ENVIRONMENT: ref
-      #     APIGEE_ENVIRONMENT: ref
-      #     PROXYGEN_PRIVATE_KEY_NAME: PSUProxygenPrivateKey
-      #     PROXYGEN_KID: "eps-cli-key-1"
-      #     DRY_RUN: false
-      #     DEPLOY_CHECK_PRESCRIPTION_STATUS_UPDATE: true
-      #   run: poetry run ./deploy_api.sh
+      - name: get mtls secrets
+        shell: bash
+        run: |
+          mkdir -p ~/.proxygen/tmp
+          client_private_key_arn=$(aws cloudformation list-exports --query "Exports[?Name=='account-resources:PsuClientKeySecret'].Value" --output text)
+          client_cert_arn=$(aws cloudformation list-exports --query "Exports[?Name=='account-resources:PsuClientCertSecret'].Value" --output text)
+          aws secretsmanager get-secret-value --secret-id "${client_private_key_arn}" --query SecretString --output text > ~/.proxygen/tmp/client_private_key
+          aws secretsmanager get-secret-value --secret-id "${client_cert_arn}" --query SecretString --output text > ~/.proxygen/tmp/client_cert
+
+      - name: Configure AWS Credentials for api release
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-2
+          role-to-assume: ${{ secrets.PROXYGEN_PTL_ROLE }}
+          role-session-name: proxygen-ptl
+
+      - name: Deploy PSU API
+        shell: bash
+        working-directory: .github/scripts
+        env:
+          API_TYPE: standard
+          VERSION_NUMBER: load_test_${{ github.run_id }}
+          PROXYGEN_PATH: ${{ env.PROXYGEN_PATH }}
+          SPEC_PATH: ${{ env.SPEC_PATH }}
+          STACK_NAME: psu
+          AWS_ENVIRONMENT: ref
+          APIGEE_ENVIRONMENT: ref
+          PROXYGEN_PRIVATE_KEY_NAME: PSUProxygenPrivateKey
+          PROXYGEN_KID: "eps-cli-key-1"
+          DRY_RUN: false
+          DEPLOY_CHECK_PRESCRIPTION_STATUS_UPDATE: true
+        run: poetry run ./deploy_api.sh
 
       # - name: Deploy CPSU API
       #   shell: bash

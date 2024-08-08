@@ -3,6 +3,9 @@ import {getAccessToken} from "./auth.mjs"
 import pino from "pino"
 const logger = pino()
 
+let oauthToken
+let tokenExpiryTime
+
 function getBody() {
   const task_identifier = uuidv4()
   const prescriptionOrderItemNumber = uuidv4()
@@ -89,6 +92,20 @@ function shortPrescId() {
   return prescriptionID
 }
 
+export async function createSharedToken(vuContext) {
+  if (!tokenExpiryTime || tokenExpiryTime < Date.now()) {
+    logger.info("Token has expired. Fetching new token")
+    logger.info(`Current expiry time: ${tokenExpiryTime}`)
+    const response = await getAccessToken(logger, vuContext.vars.target)
+    tokenExpiryTime = Date.now() + response.expires_in * 1000
+    oauthToken = response.access_token
+    logger.info(`New expiry time: ${tokenExpiryTime}`)
+  } else {
+    logger.info("Using cached token")
+  }
+  vuContext.vars.authToken = oauthToken
+}
+
 export function hasValidToken(vuContext, next) {
   const continueLooping = vuContext.tokenExpiryTime > Date.now()
   // While `continueLooping` is true, the `next` function will
@@ -96,18 +113,7 @@ export function hasValidToken(vuContext, next) {
   return next(continueLooping)
 }
 
-export async function getPSUParams(requestParams, vuContext, events) {
-  if (!vuContext.tokenExpiryTime || vuContext.tokenExpiryTime < Date.now()) {
-    logger.info("Fetching new token")
-    logger.info(`  current expiry time: ${vuContext.tokenExpiryTime}`)
-    const response = await getAccessToken(logger)
-    vuContext.tokenExpiryTime = Date.now() + response.expires_in * 1000
-    vuContext.vars.authToken = response.access_token
-    logger.info(`  new expiry time: ${vuContext.tokenExpiryTime}`)
-    logger.info(`  new token: ${vuContext.vars.authToken}`)
-  } else {
-    logger.info("  using cached token")
-  }
+export async function getPSUParams(requestParams, vuContext) {
   const body = getBody()
   requestParams.json = body
   vuContext.vars.x_request_id = uuidv4()

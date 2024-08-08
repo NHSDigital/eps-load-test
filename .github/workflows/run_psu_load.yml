@@ -2,6 +2,23 @@ name: Run psu load test
 
 on:
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to run tests against. Allowed values are dev or ref'
+        required: true
+        default: 'ref'
+      maxVusers:
+        description: 'Maximum number of vusers to create'
+        required: true
+        default: '500'
+      duration:
+        description: 'The duration to keep creating users for'
+        required: true
+        default: '900'
+      arrivalRate:
+        description: 'The number of new users to add every second'
+        required: true
+        default: '275'
 
 jobs:
   run_artillery:
@@ -11,6 +28,14 @@ jobs:
       id-token: write
       contents: read
     steps:
+      - name: Show input params
+        shell: bash
+        run: |
+          echo "## maxVusers : ${{ github.event.inputs.maxVusers }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "## duration : ${{ github.event.inputs.duration }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "## environment : ${{ github.event.inputs.environment }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "## arrivalRate : ${{ github.event.inputs.arrivalRate }}" >> "$GITHUB_STEP_SUMMARY"
+
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
@@ -40,13 +65,44 @@ jobs:
       - name: Install Dependencies
         run: make install
 
-      - name: Assume artillery runner role
+      - name: Assume dev artillery runner role
+        if: github.event.inputs.environment == 'dev'
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: eu-west-2
           role-to-assume: ${{ secrets.DEV_ARTILLERY_RUNNER_ROLE }}
           role-session-name: github-actions-artillery
 
+      - name: Assume ref artillery runner role
+        if: github.event.inputs.environment == 'ref'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-2
+          role-to-assume: ${{ secrets.REF_ARTILLERY_RUNNER_ROLE }}
+          role-session-name: github-actions-artillery
+
+      # - name: Run primer load tests
+      #   shell: bash
+      #   env:
+      #     environment: ${{ github.event.inputs.environment }}
+      #   run: |
+      #     ./scripts/run_primer_psu_load_test.sh 
+  
       - name: Run load tests
         shell: bash
-        run: ./scripts/run_psu_load_test.sh
+        env:
+          maxVusers: ${{ github.event.inputs.maxVusers }}
+          duration: ${{ github.event.inputs.duration }}
+          environment: ${{ github.event.inputs.environment }}
+          arrivalRate: ${{ github.event.inputs.arrivalRate }}
+        run: |
+          ./scripts/run_psu_load_test.sh 
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        name: Upload test_report
+        with:
+          name: test_report
+          path: |
+            psu_load_test.json
+            psu_load_test.json.html
