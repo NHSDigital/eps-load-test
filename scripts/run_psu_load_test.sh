@@ -39,14 +39,14 @@ export vpc_subnets
 artillery_worker_role_name=$(aws cloudformation list-exports --output json | jq -r '.Exports[] | select(.Name == "artillery-resources:ArtilleryWorkerRoleName") | .Value' | grep -o '[^:]*$')
 export artillery_worker_role_name
 
-launch_config=$(jq -n --arg maxVusers "${maxVusers}" \
-    --arg duration "${duration}" \
-    --arg arrivalRate "${arrivalRate}" \
-    --arg rampUpDuration "${rampUpDuration}" \
-    '{environment: [{name:"maxVusers", value:$maxVusers}, {name:"duration", value:$duration}, {name:"arrivalRate", value:$arrivalRate}, {name:"rampUpDuration", value:$rampUpDuration}]}')
+cat <<EOF > runtimeenv.env
+maxVusers=$maxVusers
+duration=$duration
+arrivalRate=$arrivalRate
+rampUpDuration=$rampUpDuration
+EOF
 
-# shellcheck disable=SC2089
-launch_config="'${launch_config}'"
+echo ${launch_config}
 
 # shellcheck disable=SC2090,SC2086
 npx artillery run-fargate \
@@ -59,7 +59,7 @@ npx artillery run-fargate \
     --security-group-ids "${security_group}" \
     --subnet-ids "${vpc_subnets}" \
     --task-role-name "${artillery_worker_role_name}" \
-    --launch-config ${launch_config} \
+    --dotenv runtimeenv.env \
     --output psu_load_test.json \
     artillery/psu_load_test.yml
 
