@@ -15,8 +15,8 @@ if [ -z "${environment}" ]; then
     exit 1
 fi
 
-if [ -z "${loadGeneratorCount}" ]; then
-    echo "loadGeneratorCount is unset or set to the empty string"
+if [ -z "${arrivalRate}" ]; then
+    echo "arrivalRate is unset or set to the empty string"
     exit 1
 fi
 
@@ -45,8 +45,7 @@ npx artillery run-fargate \
     --security-group-ids "${security_group}" \
     --subnet-ids "${vpc_subnets}" \
     --task-role-name "${artillery_worker_role_name}" \
-    --count "${loadGeneratorCount}" \
-    --launch-config "{\"environment\": [{\"name\":\"maxVusers\", \"value\":\"${maxVusers}\"},{\"name\":\"duration\",\"value\":\"${duration}\"}]}"\
+    --launch-config "{\"environment\": [{\"name\":\"maxVusers\", \"value\":\"${maxVusers}\"},{\"name\":\"duration\",\"value\":\"${duration}\"},{\"name\":\"arrivalRate\",\"value\":\"${arrivalRate}\"}]}"\
     --output psu_load_test.json \
     artillery/psu_load_test.yml
 

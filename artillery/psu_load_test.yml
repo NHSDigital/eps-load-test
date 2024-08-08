@@ -4,10 +4,8 @@ config:
     expect: {}
     apdex: {}
   phases:
-    # maxVusers is maximum number of users created which runs each sceanario
-    # this is PER LOAD GENERATOR LAUNCHED via cli call to run-fargate
     - duration: "{{ $env.duration }}"
-      arrivalRate: 1
+      arrivalRate: "{{ $env.arrivalRate }}"
       maxVusers: "{{ $env.maxVusers }}"
       name: run phase
   environments:
@@ -21,23 +19,15 @@ before:
     - function: "createSharedToken"
 
 scenarios:
-  # this is the main flow
   - name: "call psu"
-    # before each request see if we need to get a new oauth 2.0 token
     beforeRequest: "getPSUParams"
     flow:
-      # we use a loop so we can re-use the oauth 2.0 token
-      - loop:
-          - post:
-              url: "/prescription-status-update/"
-              headers:
-                Authorization: "Bearer {{ authToken }}"
-                x-request-id: "{{ x_request_id }}"
-                x-correlation-id: "{{ x_correlation_id }}"
-              expect:
-                - statusCode: 201
-          # we have a delay of 1 second between each request
-          - think: 1
-        # and we keep looping while we have a valid oauth 2.0 token
-        # this is about 10 minutes
-        whileTrue: "hasValidToken"
+      - function: "createSharedToken"
+      - post:
+          url: "/prescription-status-update/"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+            x-request-id: "{{ x_request_id }}"
+            x-correlation-id: "{{ x_correlation_id }}"
+          expect:
+            - statusCode: 201

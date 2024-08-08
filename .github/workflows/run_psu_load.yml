@@ -8,17 +8,17 @@ on:
         required: true
         default: 'ref'
       maxVusers:
-        description: 'Maximum number of vusers to create per load generator. Total number created is this times by loadGeneratorCount'
+        description: 'Maximum number of vusers to create'
         required: true
-        default: '45'
+        default: '50'
       duration:
-        description: 'The duration to keep creating users for. Note - it may be up to 10 minutes after the last user was created that the test finishes'
+        description: 'The duration to keep creating users for'
         required: true
         default: '300'
-      loadGeneratorCount:
-        description: 'The number of load generators to launch. Total number of vusers created is this times by maxVusers'
+      arrivalRate:
+        description: 'The number of new users to add every second'
         required: true
-        default: '2'
+        default: '50'
 
 jobs:
   run_artillery:
@@ -86,7 +86,7 @@ jobs:
           maxVusers: ${{ github.event.inputs.maxVusers }}
           duration: ${{ github.event.inputs.duration }}
           environment: ${{ github.event.inputs.environment }}
-          loadGeneratorCount: ${{ github.event.inputs.loadGeneratorCount }}
+          arrivalRate: ${{ github.event.inputs.arrivalRate }}
         run: |
           ./scripts/run_psu_load_test.sh 
 

@@ -3,6 +3,9 @@ import {getAccessToken} from "./auth.mjs"
 import pino from "pino"
 const logger = pino()
 
+let oauthToken
+let tokenExpiryTime
+
 function getBody() {
   const task_identifier = uuidv4()
   const prescriptionOrderItemNumber = uuidv4()
@@ -90,11 +93,17 @@ function shortPrescId() {
 }
 
 export async function createSharedToken(vuContext) {
-  logger.info("creating initial token")
-  const response = await getAccessToken(logger, vuContext.vars.target)
-  vuContext.vars.tokenExpiryTime = Date.now() + response.expires_in * 1000
-  vuContext.vars.authToken = response.access_token
-  logger.info(`token expiry time: ${vuContext.vars.tokenExpiryTime}`)
+  if (!tokenExpiryTime || tokenExpiryTime < Date.now()) {
+    logger.info("Token has expired. Fetching new token")
+    logger.info(`Current expiry time: ${tokenExpiryTime}`)
+    const response = await getAccessToken(logger, vuContext.vars.target)
+    tokenExpiryTime = Date.now() + response.expires_in * 1000
+    oauthToken = response.access_token
+    logger.info(`New expiry time: ${tokenExpiryTime}`)
+  } else {
+    logger.info("Using cached token")
+  }
+  vuContext.vars.authToken = oauthToken
 }
 
 export function hasValidToken(vuContext, next) {
@@ -105,17 +114,6 @@ export function hasValidToken(vuContext, next) {
 }
 
 export async function getPSUParams(requestParams, vuContext) {
-  if (!vuContext.vars.tokenExpiryTime || vuContext.vars.tokenExpiryTime < Date.now()) {
-    logger.info("Fetching new token")
-    logger.info(`Current expiry time: ${vuContext.vars.tokenExpiryTime}`)
-    const response = await getAccessToken(logger, vuContext.vars.target)
-    vuContext.vars.tokenExpiryTime = Date.now() + response.expires_in * 1000
-    vuContext.vars.authToken = response.access_token
-    logger.info(`New expiry time: ${vuContext.vars.tokenExpiryTime}`)
-    logger.info(`New token: ${vuContext.vars.authToken}`)
-  } else {
-    logger.info("Using cached token")
-  }
   const body = getBody()
   requestParams.json = body
   vuContext.vars.x_request_id = uuidv4()

@@ -4,7 +4,7 @@ config:
     expect: {}
     apdex: {}
   phases:
-    - duration: 10
+    - duration: 1000
       arrivalRate: 1
       name: ramp up phase
   environments:
@@ -21,14 +21,12 @@ scenarios:
   - name: "call psu"
     beforeRequest: "getPSUParams"
     flow:
-      - loop:
-          - post:
-              url: "/prescription-status-update/"
-              headers:
-                Authorization: "Bearer {{ authToken }}"
-                x-request-id: "{{ x_request_id }}"
-                x-correlation-id: "{{ x_correlation_id }}"
-              expect:
-                - statusCode: 201
-          - think: 1
-        count: 10
+      - function: "createSharedToken"
+      - post:
+          url: "/prescription-status-update/"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+            x-request-id: "{{ x_request_id }}"
+            x-correlation-id: "{{ x_correlation_id }}"
+          expect:
+            - statusCode: 201
