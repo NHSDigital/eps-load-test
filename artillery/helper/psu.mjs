@@ -92,7 +92,8 @@ function shortPrescId() {
   return prescriptionID
 }
 
-export async function createSharedToken(vuContext) {
+export async function getSharedAuthToken(vuContext) {
+  // This checks if we have a valid oauth token and if not gets a new one
   if (!tokenExpiryTime || tokenExpiryTime < Date.now()) {
     logger.info("Token has expired. Fetching new token")
     logger.info(`Current expiry time: ${tokenExpiryTime}`)
@@ -106,14 +107,8 @@ export async function createSharedToken(vuContext) {
   vuContext.vars.authToken = oauthToken
 }
 
-export function hasValidToken(vuContext, next) {
-  const continueLooping = vuContext.tokenExpiryTime > Date.now()
-  // While `continueLooping` is true, the `next` function will
-  // continue the loop in the test scenario.
-  return next(continueLooping)
-}
-
 export async function getPSUParams(requestParams, vuContext) {
+  // This sets the body of the request and some variables so headers are unique
   const body = getBody()
   requestParams.json = body
   vuContext.vars.x_request_id = uuidv4()

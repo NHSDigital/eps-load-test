@@ -7,18 +7,22 @@ on:
         description: 'Environment to run tests against. Allowed values are dev or ref'
         required: true
         default: 'ref'
-      maxVusers:
-        description: 'Maximum number of vusers to create'
-        required: true
-        default: '500'
-      duration:
-        description: 'The duration to keep creating users for'
-        required: true
-        default: '900'
       arrivalRate:
         description: 'The number of new users to add every second'
         required: true
         default: '275'
+      duration:
+        description: 'The duration of the main test'
+        required: true
+        default: '900'
+      rampUpDuration:
+        description: 'The duration to ramp up to the arrival rate'
+        required: true
+        default: '900'
+      maxVusers:
+        description: 'Maximum number of vusers to create'
+        required: true
+        default: '500'
 
 jobs:
   run_artillery:
@@ -31,10 +35,11 @@ jobs:
       - name: Show input params
         shell: bash
         run: |
-          echo "## maxVusers : ${{ github.event.inputs.maxVusers }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "## duration : ${{ github.event.inputs.duration }}" >> "$GITHUB_STEP_SUMMARY"
           echo "## environment : ${{ github.event.inputs.environment }}" >> "$GITHUB_STEP_SUMMARY"
           echo "## arrivalRate : ${{ github.event.inputs.arrivalRate }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "## duration : ${{ github.event.inputs.duration }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "## rampUpDuration : ${{ github.event.inputs.rampUpDuration }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "## maxVusers : ${{ github.event.inputs.maxVusers }}" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -81,20 +86,14 @@ jobs:
           role-to-assume: ${{ secrets.REF_ARTILLERY_RUNNER_ROLE }}
           role-session-name: github-actions-artillery
 
-      # - name: Run primer load tests
-      #   shell: bash
-      #   env:
-      #     environment: ${{ github.event.inputs.environment }}
-      #   run: |
-      #     ./scripts/run_primer_psu_load_test.sh 
-  
       - name: Run load tests
         shell: bash
         env:
-          maxVusers: ${{ github.event.inputs.maxVusers }}
-          duration: ${{ github.event.inputs.duration }}
           environment: ${{ github.event.inputs.environment }}
           arrivalRate: ${{ github.event.inputs.arrivalRate }}
+          duration: ${{ github.event.inputs.duration }}
+          rampUpDuration: ${{ github.event.inputs.rampUpDuration }}
+          maxVusers: ${{ github.event.inputs.maxVusers }}
         run: |
           ./scripts/run_psu_load_test.sh 
 

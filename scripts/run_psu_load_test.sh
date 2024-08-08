@@ -20,6 +20,11 @@ if [ -z "${arrivalRate}" ]; then
     exit 1
 fi
 
+if [ -z "${rampUpDuration}" ]; then
+    echo "rampUpDuration is unset or set to the empty string"
+    exit 1
+fi
+
 if ! [[ "${environment}" =~ ^(dev|ref)$ ]]
 then 
     echo "environment must be dev or ref"
@@ -34,7 +39,16 @@ export vpc_subnets
 artillery_worker_role_name=$(aws cloudformation list-exports --output json | jq -r '.Exports[] | select(.Name == "artillery-resources:ArtilleryWorkerRoleName") | .Value' | grep -o '[^:]*$')
 export artillery_worker_role_name
 
-# the real test
+launch_config=$(jq -n --arg maxVusers "${maxVusers}" \
+    --arg duration "${duration}" \
+    --arg arrivalRate "${arrivalRate}" \
+    --arg rampUpDuration "${rampUpDuration}" \
+    '{environment: [{name:"maxVusers", value:$maxVusers}, {name:"duration", value:$duration}, {name:"arrivalRate", value:$arrivalRate}, {name:"rampUpDuration", value:$rampUpDuration}]}')
+
+# shellcheck disable=SC2089
+launch_config="'${launch_config}'"
+
+# shellcheck disable=SC2090,SC2086
 npx artillery run-fargate \
     --environment "${environment}" \
     --secret psu_api_key \
@@ -45,7 +59,7 @@ npx artillery run-fargate \
     --security-group-ids "${security_group}" \
     --subnet-ids "${vpc_subnets}" \
     --task-role-name "${artillery_worker_role_name}" \
-    --launch-config "{\"environment\": [{\"name\":\"maxVusers\", \"value\":\"${maxVusers}\"},{\"name\":\"duration\",\"value\":\"${duration}\"},{\"name\":\"arrivalRate\",\"value\":\"${arrivalRate}\"}]}"\
+    --launch-config ${launch_config} \
     --output psu_load_test.json \
     artillery/psu_load_test.yml
 
