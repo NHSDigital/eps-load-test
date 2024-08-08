@@ -75,9 +75,10 @@ jobs:
 
       - name: Run primer load tests
         shell: bash
+        env:
+          environment: ${{ github.event.inputs.environment }}
         run: |
-          ./scripts/run_primer_psu_load_test.sh \
-            "${{ github.event.inputs.environment }}" 
+          ./scripts/run_primer_psu_load_test.sh 
   
       - name: Run load tests
         shell: bash

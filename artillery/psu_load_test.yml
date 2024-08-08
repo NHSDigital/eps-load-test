@@ -15,6 +15,11 @@ config:
       target: https://internal-dev.api.service.nhs.uk/
     ref:
       target: https://ref.api.service.nhs.uk/
+
+before:
+  flow:
+    - function: "createSharedToken"
+
 scenarios:
   # this is the main flow
   - name: "call psu"

@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
-environment=$1
+if [ -z "${environment}" ]; then
+    echo "environment is unset or set to the empty string"
+    exit 1
+fi
 
 if ! [[ "$environment" =~ ^(dev|ref)$ ]]
 then 

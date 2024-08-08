@@ -38,7 +38,6 @@ export async function getAccessToken(logger, baseTarget) {
     const response = await axios.post(authURL, payload, {
       headers: {"content-type": "application/x-www-form-urlencoded"}
     })
-    logger.info(`response data: ${JSON.stringify(response.data)}`)
     return response.data
   } catch (error) {
     logger.error("Got an error")
