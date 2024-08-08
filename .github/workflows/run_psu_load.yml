@@ -10,15 +10,15 @@ on:
       maxVusers:
         description: 'Maximum number of vusers to create'
         required: true
-        default: '50'
+        default: '500'
       duration:
         description: 'The duration to keep creating users for'
         required: true
-        default: '300'
+        default: '900'
       arrivalRate:
         description: 'The number of new users to add every second'
         required: true
-        default: '50'
+        default: '250'
 
 jobs:
   run_artillery:
