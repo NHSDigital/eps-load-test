@@ -1,9 +1,26 @@
 #!/usr/bin/env bash
 
-environment=$1
-loadGeneratorCount=$2
+if [ -z "${maxVusers}" ]; then
+    echo "maxVusers is unset or set to the empty string"
+    exit 1
+fi
 
-if ! [[ "$environment" =~ ^(dev|ref)$ ]]
+if [ -z "${duration}" ]; then
+    echo "duration is unset or set to the empty string"
+    exit 1
+fi
+
+if [ -z "${environment}" ]; then
+    echo "environment is unset or set to the empty string"
+    exit 1
+fi
+
+if [ -z "${loadGeneratorCount}" ]; then
+    echo "loadGeneratorCount is unset or set to the empty string"
+    exit 1
+fi
+
+if ! [[ "${environment}" =~ ^(dev|ref)$ ]]
 then 
     echo "environment must be dev or ref"
     exit 1
@@ -25,10 +42,10 @@ npx artillery run-fargate \
     --secret psu_kid \
     --region eu-west-2 \
     --cluster artilleryio-cluster \
-    --security-group-ids ${security_group} \
-    --subnet-ids ${vpc_subnets} \
-    --task-role-name ${artillery_worker_role_name} \
-    --count ${loadGeneratorCount} \
+    --security-group-ids "${security_group}" \
+    --subnet-ids "${vpc_subnets}" \
+    --task-role-name "${artillery_worker_role_name}" \
+    --count "${loadGeneratorCount}" \
     --launch-config "{\"environment\": [{\"name\":\"maxVusers\", \"value\":\"${maxVusers}\"},{\"name\":\"duration\",\"value\":\"${duration}\"}]}"\
     --output psu_load_test.json \
     artillery/psu_load_test.yml
