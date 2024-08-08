@@ -18,7 +18,7 @@ on:
       arrivalRate:
         description: 'The number of new users to add every second'
         required: true
-        default: '250'
+        default: '275'
 
 jobs:
   run_artillery:

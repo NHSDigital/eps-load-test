@@ -5,7 +5,7 @@ config:
     apdex: {}
   phases:
     - name: ramp up phase
-      duration: 300
+      duration: 900
       arrivalRate: 1
       rampTo: "{{ $env.arrivalRate }}"
       maxVusers: "{{ $env.maxVusers }}"
