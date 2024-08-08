@@ -8,7 +8,7 @@ on:
         required: true
         default: 'ref'
       maxVusers:
-        description: 'Maximum number of vusers to create per load generator'
+        description: 'Maximum number of vusers to create per load generator. Total number created is this times by loadGeneratorCount'
         required: true
         default: '45'
       duration:
@@ -16,7 +16,7 @@ on:
         required: true
         default: '300'
       loadGeneratorCount:
-        description: 'The number of load generators to launch.'
+        description: 'The number of load generators to launch. Total number of vusers created is this times by maxVusers'
         required: true
         default: '2'
 

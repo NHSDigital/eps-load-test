@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
         psuWorkflowRunID:
-          description: 'The workflow run id of a psu run to download packaged code from'
+          description: 'The github workflow run id of a psu build and deployment to release to REF environment'
           required: true
 
 jobs:
