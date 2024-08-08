@@ -1,3 +1,3 @@
-import {getPSUParams, hasValidToken, createSharedToken} from "./helper/psu.mjs"
+import {getPSUParams, getSharedAuthToken} from "./helper/psu.mjs"
 
-export {getPSUParams, hasValidToken, createSharedToken}
+export {getPSUParams, getSharedAuthToken}
