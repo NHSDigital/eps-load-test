@@ -29,6 +29,7 @@ npx artillery run-fargate \
     --subnet-ids ${vpc_subnets} \
     --task-role-name ${artillery_worker_role_name} \
     --count ${loadGeneratorCount} \
+    --launch-config "{\"environment\": [{\"name\":\"maxVusers\", \"value\":\"${maxVusers}\"},{\"name\":\"duration\",\"value\":\"${duration}\"}]}"\
     --output psu_load_test.json \
     artillery/psu_load_test.yml
 
