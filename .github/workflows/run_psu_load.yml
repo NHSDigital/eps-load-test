@@ -28,6 +28,14 @@ jobs:
       id-token: write
       contents: read
     steps:
+      - name: Show input params
+        shell: bash
+        run: |
+          echo "## maxVusers : ${{ github.event.inputs.maxVusers }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "## duration : ${{ github.event.inputs.duration }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "## environment : ${{ github.event.inputs.environment }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "## arrivalRate : ${{ github.event.inputs.arrivalRate }}" >> "$GITHUB_STEP_SUMMARY"
+
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
@@ -73,12 +81,12 @@ jobs:
           role-to-assume: ${{ secrets.REF_ARTILLERY_RUNNER_ROLE }}
           role-session-name: github-actions-artillery
 
-      - name: Run primer load tests
-        shell: bash
-        env:
-          environment: ${{ github.event.inputs.environment }}
-        run: |
-          ./scripts/run_primer_psu_load_test.sh 
+      # - name: Run primer load tests
+      #   shell: bash
+      #   env:
+      #     environment: ${{ github.event.inputs.environment }}
+      #   run: |
+      #     ./scripts/run_primer_psu_load_test.sh 
   
       - name: Run load tests
         shell: bash

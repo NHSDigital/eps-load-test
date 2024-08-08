@@ -15,6 +15,11 @@ jobs:
         contents: read
   
     steps:
+      - name: Show input params
+        shell: bash
+        run: |
+          echo "## psuWorkflowRunID : ${{ github.event.inputs.psuWorkflowRunID }}" >> "$GITHUB_STEP_SUMMARY"
+
       - name: Checkout local github actions
         uses: actions/checkout@v4
         with:

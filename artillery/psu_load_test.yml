@@ -4,10 +4,15 @@ config:
     expect: {}
     apdex: {}
   phases:
-    - duration: "{{ $env.duration }}"
+    - name: ramp up phase
+      duration: 300
+      arrivalRate: 1
+      rampTo: "{{ $env.arrivalRate }}"
+      maxVusers: "{{ $env.maxVusers }}"
+    - name: run phase
+      duration: "{{ $env.duration }}"
       arrivalRate: "{{ $env.arrivalRate }}"
       maxVusers: "{{ $env.maxVusers }}"
-      name: run phase
   environments:
     dev:
       target: https://internal-dev.api.service.nhs.uk/
