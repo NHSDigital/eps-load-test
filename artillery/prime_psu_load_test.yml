@@ -4,7 +4,7 @@ config:
     expect: {}
     apdex: {}
   phases:
-    - duration: 1000
+    - duration: 100
       arrivalRate: 1
       name: ramp up phase
   environments:
