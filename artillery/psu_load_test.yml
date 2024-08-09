@@ -5,7 +5,7 @@ config:
     apdex: {}
   phases:
     - name: ramp up phase
-      duration: 900
+      duration: "{{ $env.rampUpDuration }}"
       arrivalRate: 1
       rampTo: "{{ $env.arrivalRate }}"
       maxVusers: "{{ $env.maxVusers }}"
@@ -21,13 +21,13 @@ config:
 
 before:
   flow:
-    - function: "createSharedToken"
+    - function: "getSharedAuthToken"
 
 scenarios:
   - name: "call psu"
     beforeRequest: "getPSUParams"
     flow:
-      - function: "createSharedToken"
+      - function: "getSharedAuthToken"
       - post:
           url: "/prescription-status-update/"
           headers:
