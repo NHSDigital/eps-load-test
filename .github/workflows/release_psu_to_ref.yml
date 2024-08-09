@@ -134,19 +134,19 @@ jobs:
           DEPLOY_CHECK_PRESCRIPTION_STATUS_UPDATE: true
         run: poetry run ./deploy_api.sh
 
-      # - name: Deploy CPSU API
-      #   shell: bash
-      #   working-directory: .github/scripts
-      #   env:
-      #     API_TYPE: custom
-      #     VERSION_NUMBER: load_test_${{ github.run_id }}
-      #     PROXYGEN_PATH: ${{ env.PROXYGEN_PATH }}
-      #     SPEC_PATH: ${{ env.CPSU_SPEC_PATH }}
-      #     STACK_NAME: psu
-      #     AWS_ENVIRONMENT: ref
-      #     APIGEE_ENVIRONMENT: ref
-      #     PROXYGEN_PRIVATE_KEY_NAME: CPSUProxygenPrivateKey
-      #     PROXYGEN_KID: eps-cli-key-cpsu-1
-      #     DRY_RUN: false
-      #     DEPLOY_CHECK_PRESCRIPTION_STATUS_UPDATE: true
-      #   run: poetry run ./deploy_api.sh
+      - name: Deploy CPSU API
+        shell: bash
+        working-directory: .github/scripts
+        env:
+          API_TYPE: custom
+          VERSION_NUMBER: load_test_${{ github.run_id }}
+          PROXYGEN_PATH: ${{ env.PROXYGEN_PATH }}
+          SPEC_PATH: ${{ env.CPSU_SPEC_PATH }}
+          STACK_NAME: psu
+          AWS_ENVIRONMENT: ref
+          APIGEE_ENVIRONMENT: ref
+          PROXYGEN_PRIVATE_KEY_NAME: CPSUProxygenPrivateKey
+          PROXYGEN_KID: eps-cli-key-cpsu-1
+          DRY_RUN: false
+          DEPLOY_CHECK_PRESCRIPTION_STATUS_UPDATE: true
+        run: poetry run ./deploy_api.sh
