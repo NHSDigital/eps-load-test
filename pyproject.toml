@@ -35,6 +35,6 @@ proxygen-cli = "^2.1.14"
 [tool.poetry.dev-dependencies]
 flake8 = "^5.0.4"
 black = "^24.4"
-pip-licenses = "^4.5.1"
+pip-licenses = "^5.0.0"
 
 [tool.poetry.scripts]
