@@ -33,7 +33,7 @@ cfn-lint = "^1.6.1"
 proxygen-cli = "^2.1.14"
 
 [tool.poetry.dev-dependencies]
-flake8 = "^5.0.4"
+flake8 = "^7.1.1"
 black = "^24.4"
 pip-licenses = "^5.0.0"
 
