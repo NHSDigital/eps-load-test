@@ -132,6 +132,7 @@ jobs:
           PROXYGEN_KID: "eps-cli-key-1"
           DRY_RUN: false
           DEPLOY_CHECK_PRESCRIPTION_STATUS_UPDATE: true
+          ENABLE_ALERTS: true
         run: poetry run ./deploy_api.sh
 
       - name: Deploy CPSU API
@@ -149,4 +150,5 @@ jobs:
           PROXYGEN_KID: eps-cli-key-cpsu-1
           DRY_RUN: false
           DEPLOY_CHECK_PRESCRIPTION_STATUS_UPDATE: true
+          ENABLE_ALERTS: true
         run: poetry run ./deploy_api.sh
