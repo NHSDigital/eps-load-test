@@ -32,7 +32,7 @@ then
 fi
 
 security_group=$(aws cloudformation list-exports --output json | jq -r '.Exports[] | select(.Name == "vpc-resources:VpcDefaultSecurityGroup") | .Value' | grep -o '[^:]*$')
-security_group=prescribe-dispense-LoadBalancers-SZHMHZ5I7IEP-LoadBalancerSecurityGroup-euCBejTNhIVM
+security_group=sg-0008adcf48e06f27b
 export security_group
 vpc_subnets=$(aws cloudformation list-exports --output json | jq -r '.Exports[] | select(.Name == "vpc-resources:PrivateSubnets") | .Value' | grep -o '[^:]*$')
 export vpc_subnets
