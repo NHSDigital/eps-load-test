@@ -99,6 +99,7 @@ jobs:
           VERSION_NUMBER: load_test_${{ github.run_id }}
           DYNAMODB_AUTOSCALE: true
           DEPLOY_CHECK_PRESCRIPTION_STATUS_UPDATE: true
+          ENABLE_ALERTS: true
         run: ./release_code.sh
 
       - name: get mtls secrets
