@@ -1,0 +1,107 @@
+name: Run CPSU load test
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to run tests against. Allowed values are dev or ref'
+        required: true
+        default: 'ref'
+      arrivalRate:
+        description: 'The number of new users to add every second'
+        required: true
+        default: '275'
+      duration:
+        description: 'The duration of the main test'
+        required: true
+        default: '900'
+      rampUpDuration:
+        description: 'The duration to ramp up to the arrival rate'
+        required: true
+        default: '900'
+      maxVusers:
+        description: 'Maximum number of vusers to create'
+        required: true
+        default: '500'
+
+jobs:
+  run_artillery:
+    name: Run Artillery
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Show input params
+        shell: bash
+        run: |
+          echo "## environment : ${{ github.event.inputs.environment }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "## arrivalRate : ${{ github.event.inputs.arrivalRate }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "## duration : ${{ github.event.inputs.duration }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "## rampUpDuration : ${{ github.event.inputs.rampUpDuration }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "## maxVusers : ${{ github.event.inputs.maxVusers }}" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BRANCH_NAME }}
+
+      - name: Install asdf
+        uses: asdf-vm/actions/setup@05e0d2ed97b598bfce82fd30daf324ae0c4570e6
+        with:
+          asdf_branch: v0.14.0
+      
+      - name: Cache asdf
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.asdf
+          key: ${{ runner.os }}-asdf-${{ hashFiles('**/.tool-versions') }}
+          restore-keys: |
+            ${{ runner.os }}-asdf-
+      
+      - name: Install asdf dependencies in .tool-versions
+        uses: asdf-vm/actions/install@05e0d2ed97b598bfce82fd30daf324ae0c4570e6
+        with:
+          asdf_branch: v0.14.0
+        env:
+            PYTHON_CONFIGURE_OPTS: --enable-shared
+
+      - name: Install Dependencies
+        run: make install
+
+      - name: Assume dev artillery runner role
+        if: github.event.inputs.environment == 'dev'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-2
+          role-to-assume: ${{ secrets.DEV_ARTILLERY_RUNNER_ROLE }}
+          role-session-name: github-actions-artillery
+
+      - name: Assume ref artillery runner role
+        if: github.event.inputs.environment == 'ref'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-2
+          role-to-assume: ${{ secrets.REF_ARTILLERY_RUNNER_ROLE }}
+          role-session-name: github-actions-artillery
+
+      - name: Run load tests
+        shell: bash
+        env:
+          environment: ${{ github.event.inputs.environment }}
+          arrivalRate: ${{ github.event.inputs.arrivalRate }}
+          duration: ${{ github.event.inputs.duration }}
+          rampUpDuration: ${{ github.event.inputs.rampUpDuration }}
+          maxVusers: ${{ github.event.inputs.maxVusers }}
+        run: |
+          ./scripts/run_cpsu_load_test.sh 
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        name: Upload test_report
+        with:
+          name: test_report
+          path: |
+            cpsu_load_test.json
+            cpsu_load_test.json.html

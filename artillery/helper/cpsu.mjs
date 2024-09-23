@@ -6,35 +6,27 @@ const logger = pino()
 let oauthToken
 let tokenExpiryTime
 
-function getBody() {
-  const prescriptionUUID = uuidv4();
+export function getBody() {
+  const prescriptionUUID = shortPrescId();
+  const task_identifier = uuidv4()
   const gPSurgery = "Doctors Office A";
   const prescriptionType = "repeatDispensing";
   const repeatNo = 3;
   const nextRepeatDueDate = "2022-01-01";
   const expiryDate = "2022-01-01 23:59:59";
-  const patientID = uuidv4();
+  const patientID = getPatientId();
   const nHSCHI = "9449304130";
   const deliveryType = "Delivery required";
   const oDSCode = "FHA82";
   const currentTimestamp = new Date().toISOString();
   const items = [
     {
-      itemID: uuidv4(),
+      itemID: task_identifier,
       dMDCode: "319781007",
       dMDDesc: "Aspirin 75mg gastro-resistant tablets",
       uOMDesc: "tablet",
       qty: "99",
       dosage: "Take one daily",
-      status: "Pending"
-    },
-    {
-      itemID: uuidv4(),
-      dMDCode: "134531009",
-      dMDDesc: "Almotriptan 12.5mg tablets",
-      uOMDesc: "tablet",
-      qty: "12",
-      dosage: "As Directed",
       status: "Pending"
     }
   ];
@@ -60,6 +52,33 @@ function getBody() {
   return body;
 }
 
+function getPatientId() {
+    // Generate IDs of the format "XXXXX-XXXXXX", where X are all numbers
+    const first = Math.floor(10000 + Math.random() * 90000);
+    const second = Math.floor(100000 + Math.random() * 900000);
+    return `${first}-${second}`;
+}
+
+function shortPrescId() {
+    const _PRESC_CHECKDIGIT_VALUES = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ+"
+    const hexString = uuidv4().replace(/-/g, "").toUpperCase()
+    const first = hexString.substring(0, 6)
+    const middle = "A12345"
+    const last = hexString.substring(12, 17)
+    let prescriptionID = `${first}-${middle}-${last}`
+    const prscID = prescriptionID.replace(/-/g, "")
+    const prscIDLength = prscID.length
+    let runningTotal = 0
+    const strings = prscID.split("")
+    strings.forEach((character, index) => {
+      runningTotal = runningTotal + parseInt(character, 36) * 2 ** (prscIDLength - index)
+    })
+    const checkValue = (38 - (runningTotal % 37)) % 37
+    const checkDigit = _PRESC_CHECKDIGIT_VALUES.substring(checkValue, checkValue + 1)
+    prescriptionID += checkDigit
+    return prescriptionID
+  }
+  
 export async function getSharedAuthToken(vuContext) {
   // This checks if we have a valid oauth token and if not gets a new one
   if (!tokenExpiryTime || tokenExpiryTime < Date.now()) {
