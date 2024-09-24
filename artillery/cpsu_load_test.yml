@@ -18,6 +18,8 @@ config:
       target: https://internal-dev.api.service.nhs.uk/
     ref:
       target: https://ref.api.service.nhs.uk/
+    int:
+      target: https://int.api.service.nhs.uk/
 
 before:
   flow:
@@ -29,7 +31,7 @@ scenarios:
     flow:
       - function: "getSharedAuthToken"
       - post:
-          url: "/custom-prescription-status-update/format-1/"
+          url: "/custom-prescription-status-update/format-1"
           headers:
             # TODO: I'm pretty sure the existing API token will not have CPSU access.
             # If the load testing fails, this should be the first place we look for the cause

@@ -12,6 +12,8 @@ __pycache__/
 .vscode/settings.json
 ./sign/
 *.key
+*.pem
+*load_test.json
 .DS_Store
 junit.xml
 release_notes
