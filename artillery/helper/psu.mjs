@@ -97,7 +97,15 @@ export async function getSharedAuthToken(vuContext) {
   if (!tokenExpiryTime || tokenExpiryTime < Date.now()) {
     logger.info("Token has expired. Fetching new token")
     logger.info(`Current expiry time: ${tokenExpiryTime}`)
-    const response = await getAccessToken(logger, vuContext.vars.target)
+
+    // Fetch keys from environment variables
+    const privateKey = process.env.psu_private_key
+    const api_key = process.env.psu_api_key
+    const kid = process.env.psu_kid
+
+    // And use them to fetch the access token
+    const response = await getAccessToken(logger, vuContext.vars.target, privateKey, api_key, kid)
+    
     tokenExpiryTime = Date.now() + response.expires_in * 1000
     oauthToken = response.access_token
     logger.info(`New expiry time: ${tokenExpiryTime}`)
