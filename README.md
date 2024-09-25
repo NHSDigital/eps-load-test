@@ -9,7 +9,7 @@ Reports are generated as standalone webpage files, and are made available as art
 
 There are some scripts that can be used to dry-run small versions of the load testing locally. Note that the targets will still be deployed stacks - the setup for this is configured in your `.envrc` file.
 
-The .envrc file also needs to contain an API key corresponding to an app in the [developer hub](https://dos-internal.ptl.api.platform.nhs.uk/Index). Place the private key in a `.pem` file in the root of this directory. The deployment environment must also be set, one of `["dev", "int", "ref"]`. Replace the elements wrapped in `<>`
+The .envrc file also needs to contain an API key corresponding to an app in the [developer hub](https://dos-internal.ptl.api.platform.nhs.uk/Index) - follow the setup instructions [here](https://nhsd-confluence.digital.nhs.uk/display/APIMC/EPS+Prescription+Status+Update+API+Authorisation) to create one. Place the private key in a `.pem` file in the root of this directory. The deployment environment must also be set, one of `["dev", "int", "ref"]`. Replace the elements wrapped in `<>`
 
 ```bash
 export maxVusers=1
