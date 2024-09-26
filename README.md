@@ -20,10 +20,6 @@ export rampUpDuration=1
 export environment="<WHICH ENVIRONMENT YOU ARE LOAD TESTING>"
 
 export cpsu_api_key="<YOUR API KEY>"
-export cpsu_kid="<YOUR KID VALUE>"
-
-cpsu_private_key=$(cat /workspaces/eps-load-test/cpsu_private_key.pem)
-export cpsu_private_key
 
 export psu_api_key="<YOUR API KEY>"
 export psu_kid="<YOUR KID VALUE>"

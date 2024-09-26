@@ -36,7 +36,7 @@ scenarios:
       - post:
           url: "/custom-prescription-status-update/format-1"
           headers:
-            Authorization: "Bearer {{ authToken }}"
+            apiKey: "{{ apiKey }}"
             x-request-id: "{{ x_request_id }}"
             x-correlation-id: "{{ x_correlation_id }}"
           expect:
@@ -52,7 +52,7 @@ scenarios:
       - post:
           url: "/custom-prescription-status-update/format-1"
           headers:
-            Authorization: "Bearer {{ authToken }}"
+            apikey: "{{ apiKey }}"
             x-request-id: "{{ x_request_id }}"
             x-correlation-id: "{{ x_correlation_id }}"
           expect:

@@ -89,26 +89,7 @@ function invalidShortPrescId() {
 }
 
 export async function getSharedAuthToken(vuContext) {
-  // This checks if we have a valid oauth token and if not gets a new one
-  if (!tokenExpiryTime || tokenExpiryTime < Date.now()) {
-    logger.info("Token has expired. Fetching new token")
-    logger.info(`Current expiry time: ${tokenExpiryTime}`)
-
-    // Fetch keys from environment variables
-    const privateKey = process.env.cpsu_private_key
-    const api_key = process.env.cpsu_api_key
-    const kid = process.env.cpsu_kid
-
-    // And use them to fetch the access token
-    const response = await getAccessToken(logger, vuContext.vars.target, privateKey, api_key, kid)
-    
-    tokenExpiryTime = Date.now() + response.expires_in * 1000
-    oauthToken = response.access_token
-    logger.info(`New expiry time: ${tokenExpiryTime}`)
-  } else {
-    logger.info("Using cached token")
-  }
-  vuContext.vars.authToken = oauthToken
+  vuContext.vars.apiKey = process.env.cpsu_api_key
 }
 
 export async function getCPSUParams(requestParams, vuContext) {
