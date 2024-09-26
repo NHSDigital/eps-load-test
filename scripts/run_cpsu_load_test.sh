@@ -31,7 +31,7 @@ then
     exit 1
 fi
 
-security_group=$(aws cloudformation list-exports --output json | jq -r '.Exports[] | select(.Name == "artillery-resources:ArtillerySecurityGroup") | .Value' | grep -o '[^:]*$')
+security_group=$(aws cloudformation list-exports --output json | jq -r '.Exports[] | select(.Name == "artillery-resources:ArtillerySecurityGroupId") | .Value' | grep -o '[^:]*$')
 export security_group
 vpc_subnets=$(aws cloudformation list-exports --output json | jq -r '.Exports[] | select(.Name == "vpc-resources:PrivateSubnets") | .Value' | grep -o '[^:]*$')
 export vpc_subnets
