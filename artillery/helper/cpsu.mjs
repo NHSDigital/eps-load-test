@@ -6,8 +6,10 @@ const logger = pino()
 let oauthToken
 let tokenExpiryTime
 
-export function getBody() {
-  const prescriptionUUID = shortPrescId();
+export function getBody(isValid = true) {
+  // If this is intended to be a failed request, mangle the prescription ID.
+  const prescriptionUUID = isValid ? shortPrescId() : invalidShortPrescId();
+  
   const task_identifier = uuidv4()
   const gPSurgery = "Doctors Office A";
   const prescriptionType = "repeatDispensing";
@@ -79,6 +81,13 @@ function shortPrescId() {
     return prescriptionID
   }
   
+function invalidShortPrescId() {
+  // Generate an invalid prescription ID by removing the last character
+  let invalidId = shortPrescId();
+  invalidId = invalidId.slice(0, -1); // Remove last character to invalidate
+  return invalidId;
+}
+
 export async function getSharedAuthToken(vuContext) {
   // This checks if we have a valid oauth token and if not gets a new one
   if (!tokenExpiryTime || tokenExpiryTime < Date.now()) {
@@ -103,9 +112,13 @@ export async function getSharedAuthToken(vuContext) {
 }
 
 export async function getCPSUParams(requestParams, vuContext) {
-  // This sets the body of the request and some variables so headers are unique
-  const body = getBody()
+  // Some requests are intended to be invalid ones. 
+  // Check if this request is supposed to be valid, and fetch an appropriate body
+  const isValid = vuContext.scenario.tags.isValid
+  const body = getBody(isValid)
+
   requestParams.json = body
+  // This sets the body of the request and some variables so headers are unique
   vuContext.vars.x_request_id = uuidv4()
   vuContext.vars.x_correlation_id = uuidv4()
 }

@@ -26,17 +26,34 @@ before:
     - function: "getSharedAuthToken"
 
 scenarios:
-  - name: "call cpsu"
+  - name: "call cpsu - successful"
+    weight: 90
+    tags:
+      isValid: true
     beforeRequest: "getCPSUParams"
     flow:
       - function: "getSharedAuthToken"
       - post:
           url: "/custom-prescription-status-update/format-1"
           headers:
-            # TODO: I'm pretty sure the existing API token will not have CPSU access.
-            # If the load testing fails, this should be the first place we look for the cause
             Authorization: "Bearer {{ authToken }}"
             x-request-id: "{{ x_request_id }}"
             x-correlation-id: "{{ x_correlation_id }}"
           expect:
             - statusCode: 201
+
+  - name: "call cpsu - unsuccessful"
+    weight: 10
+    tags:
+      isValid: false
+    beforeRequest: "getCPSUParams"
+    flow:
+      - function: "getSharedAuthToken"
+      - post:
+          url: "/custom-prescription-status-update/format-1"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+            x-request-id: "{{ x_request_id }}"
+            x-correlation-id: "{{ x_correlation_id }}"
+          expect:
+            - statusCode: 400

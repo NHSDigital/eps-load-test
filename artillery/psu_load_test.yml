@@ -26,7 +26,10 @@ before:
     - function: "getSharedAuthToken"
 
 scenarios:
-  - name: "call psu"
+  - name: "call psu - successful"
+    weight: 90
+    tags:
+      isValid: true
     beforeRequest: "getPSUParams"
     flow:
       - function: "getSharedAuthToken"
@@ -38,3 +41,19 @@ scenarios:
             x-correlation-id: "{{ x_correlation_id }}"
           expect:
             - statusCode: 201
+
+  - name: "call psu - unsuccessful"
+    weight: 10
+    tags:
+      isValid: false
+    beforeRequest: "getPSUParams"
+    flow:
+      - function: "getSharedAuthToken"
+      - post:
+          url: "/prescription-status-update/"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+            x-request-id: "{{ x_request_id }}"
+            x-correlation-id: "{{ x_correlation_id }}"
+          expect:
+            - statusCode: 400
