@@ -1,0 +1,38 @@
+name: Run CPSU load test
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to run tests against. Allowed values are dev or ref'
+        required: true
+        default: 'ref'
+      arrivalRate:
+        description: 'The number of new users to add every second'
+        required: true
+        default: '275'
+      duration:
+        description: 'The duration of the main test'
+        required: true
+        default: '900'
+      rampUpDuration:
+        description: 'The duration to ramp up to the arrival rate'
+        required: true
+        default: '900'
+      maxVusers:
+        description: 'Maximum number of vusers to create'
+        required: true
+        default: '500'
+
+jobs:
+  run_artillery:
+    name: Run Artillery
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Dummy step
+        shell: bash
+        run: |
+          echo "[DUMMY] Running Artillery"
