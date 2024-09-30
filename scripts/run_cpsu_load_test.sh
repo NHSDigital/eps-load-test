@@ -52,8 +52,6 @@ echo ${launch_config}
 npx artillery run-fargate \
     --environment "${environment}" \
     --secret cpsu_api_key \
-    --secret cpsu_private_key \
-    --secret cpsu_kid \
     --region eu-west-2 \
     --cluster artilleryio-cluster \
     --security-group-ids "${security_group}" \

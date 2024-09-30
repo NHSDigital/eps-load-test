@@ -31,16 +31,6 @@ if [ -z "${cpsu_api_key}" ]; then
     exit 1
 fi
 
-if [ -z "${cpsu_private_key}" ]; then
-    echo "cpsu_private_key is unset or set to the empty string"
-    exit 1
-fi
-
-if [ -z "${cpsu_kid}" ]; then
-    echo "cpsu_kid is unset or set to the empty string"
-    exit 1
-fi
-
 
 # Create a dotenv file with the variables for Artillery
 cat <<EOF > runtimeenv.env
@@ -49,8 +39,6 @@ duration=${duration}
 arrivalRate=${arrivalRate}
 rampUpDuration=${rampUpDuration}
 cpsu_api_key="${cpsu_api_key}"
-cpsu_private_key="${cpsu_private_key}"
-cpsu_kid="${cpsu_kid}"
 EOF
 
 echo "Running Artillery test locally..."
