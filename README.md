@@ -30,6 +30,9 @@ export psu_private_key
 
 Note that the quotes are important - hyphens will break the variable loading process.
 
+Valid environments are `dev`, `int`, `ref`, and `pr`.
+A pull request deployment can be targeted with the local tests, by using the `pr` environment, and specifying a `prNumber` variable in the `.envrc` file.
+
 Small-scale local load tests can then be run with `make` commands:
 - `make local-psu`
 - `make local-cpsu`
