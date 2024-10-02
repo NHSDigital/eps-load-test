@@ -26,6 +26,10 @@ function createSignedJWT(baseTarget, privateKey, api_key, kid) {
 }
 
 export async function getAccessToken(logger, baseTarget, privateKey, api_key, kid) {
+  // If the baseTarget contains the substring "psu-pr-", then we need to swap it out for the correct target
+  if (baseTarget.includes("psu-pr-")) {
+    baseTarget = "https://internal-dev.api.service.nhs.uk/"
+  }
   const authURL = `${baseTarget}oauth2/token`
   const signedJWT = createSignedJWT(baseTarget, privateKey, api_key, kid)
   const payload = {

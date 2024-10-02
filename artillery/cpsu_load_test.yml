@@ -20,6 +20,8 @@ config:
       target: https://ref.api.service.nhs.uk/
     int:
       target: https://int.api.service.nhs.uk/
+    pr:
+      target: https://psu-pr-{{ $env.prNumber }}.dev.eps.national.nhs.uk/
 
 before:
   flow:

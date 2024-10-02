@@ -1,5 +1,4 @@
 import {v4 as uuidv4} from "uuid"
-import {getAccessToken} from "./auth.mjs"
 import pino from "pino"
 const logger = pino()
 
