@@ -7,7 +7,7 @@
 **/node_modules/
 .#*
 __pycache__/
-.envrc
+.envrc*
 .idea
 .vscode/settings.json
 ./sign/
