@@ -26,6 +26,7 @@ export psu_kid="<YOUR KID VALUE>"
 
 psu_private_key=$(cat /workspaces/eps-load-test/psu_private_key.pem)
 export psu_private_key
+export status_api_token="<STATUS API TOKEN>"
 ```
 
 Note that the quotes are important - hyphens will break the variable loading process.

@@ -84,9 +84,11 @@ scenarios:
     tags:
       isValid: true
     flow:
+      - function: "getSharedAuthToken"
       - get:
-          url: "/prescription-status-update/metadata/"
+          url: "/prescription-status-update/metadata"
           headers:
+            Authorization: "Bearer {{ authToken }}"
             x-request-id: "{{ x_request_id }}"
             x-correlation-id: "{{ x_correlation_id }}"
           expect:
@@ -98,8 +100,9 @@ scenarios:
       isValid: true
     flow:
       - get:
-          url: "/prescription-status-update/_status/"
+          url: "/prescription-status-update/_status"
           headers:
+            apikey: "{{ $env.status_api_token }}"
             x-request-id: "{{ x_request_id }}"
             x-correlation-id: "{{ x_correlation_id }}"
           expect:
