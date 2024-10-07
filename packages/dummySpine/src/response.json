@@ -70,25 +70,7 @@
                             },
                             "substitution": {
                                 "allowedBoolean": false
-                            },
-                            "extension": [
-                                {
-                                    "url": "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory",
-                                    "extension": [
-                                        {
-                                            "url": "statusDate",
-                                            "valueDateTime": "2024-02-01T11:14:21Z"
-                                        },
-                                        {
-                                            "url": "status",
-                                            "valueCoding": {
-                                                "system": "https://fhir.nhs.uk/CodeSystem/task-businessStatus-nppt",
-                                                "code": "With Pharmacy"
-                                            }
-                                        }
-                                    ]
-                                }
-                            ]
+                            }
                         }
                     },
                     {
@@ -144,25 +126,7 @@
                             },
                             "substitution": {
                                 "allowedBoolean": false
-                            },
-                            "extension": [
-                                {
-                                    "url": "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory",
-                                    "extension": [
-                                        {
-                                            "url": "statusDate",
-                                            "valueDateTime": "2024-02-01T11:14:21Z"
-                                        },
-                                        {
-                                            "url": "status",
-                                            "valueCoding": {
-                                                "system": "https://fhir.nhs.uk/CodeSystem/task-businessStatus-nppt",
-                                                "code": "With Pharmacy"
-                                            }
-                                        }
-                                    ]
-                                }
-                            ]
+                            }
                         }
                     },
                     {
@@ -219,24 +183,6 @@
                             "substitution": {
                                 "allowedBoolean": false
                             },
-                            "extension": [
-                                {
-                                    "url": "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory",
-                                    "extension": [
-                                        {
-                                            "url": "statusDate",
-                                            "valueDateTime": "2024-02-01T11:14:21Z"
-                                        },
-                                        {
-                                            "url": "status",
-                                            "valueCoding": {
-                                                "system": "https://fhir.nhs.uk/CodeSystem/task-businessStatus-nppt",
-                                                "code": "With Pharmacy"
-                                            }
-                                        }
-                                    ]
-                                }
-                            ]
                         }
                     },
                     {
@@ -292,25 +238,7 @@
                             },
                             "substitution": {
                                 "allowedBoolean": false
-                            },
-                            "extension": [
-                                {
-                                    "url": "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory",
-                                    "extension": [
-                                        {
-                                            "url": "statusDate",
-                                            "valueDateTime": "2024-02-01T11:14:21Z"
-                                        },
-                                        {
-                                            "url": "status",
-                                            "valueCoding": {
-                                                "system": "https://fhir.nhs.uk/CodeSystem/task-businessStatus-nppt",
-                                                "code": "With Pharmacy"
-                                            }
-                                        }
-                                    ]
-                                }
-                            ]
+                            }
                         }
                     },
                     {
