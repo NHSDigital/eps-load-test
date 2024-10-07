@@ -106,8 +106,9 @@ jobs:
             psu_load_test.json
             psu_load_test.json.html
 
-      - name: Upload artifacts to S3
-        if: always()
+      - name: Upload artifacts to S3, if we are using REF environment
+        if: github.event.inputs.environment == 'ref'
+        continue-on-error: true
         env:
           AWS_REGION: eu-west-2
           BUCKET_NAME: artilleryio-test-data-${{ secrets.AWS_ACCOUNT_ID }}
@@ -117,7 +118,7 @@ jobs:
           aws s3 cp psu_load_test.json.html s3://$BUCKET_NAME/reports/$RUN_ID/psu_load_test.json.html --acl public-read
 
       - name: Output link to HTML report
-        if: always()
+        if: github.event.inputs.environment == 'ref'
         env:
           AWS_REGION: eu-west-2
           BUCKET_NAME: artilleryio-test-data-${{ secrets.AWS_ACCOUNT_ID }}
