@@ -31,3 +31,9 @@ install-node:
 
 install-hooks: install-python
 	poetry run pre-commit install --install-hooks --overwrite
+
+local-cpsu:
+	./scripts/test_cpsu_load_test.sh
+
+local-psu:
+	./scripts/test_psu_load_test.sh

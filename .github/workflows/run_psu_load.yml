@@ -105,3 +105,24 @@ jobs:
           path: |
             psu_load_test.json
             psu_load_test.json.html
+
+      - name: Upload artifacts to S3
+        if: always()
+        env:
+          AWS_REGION: eu-west-2
+          BUCKET_NAME: artilleryio-test-data-${{ secrets.AWS_ACCOUNT_ID }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          aws s3 cp psu_load_test.json s3://$BUCKET_NAME/reports/$RUN_ID/psu_load_test.json --acl public-read
+          aws s3 cp psu_load_test.json.html s3://$BUCKET_NAME/reports/$RUN_ID/psu_load_test.json.html --acl public-read
+
+      - name: Output link to HTML report
+        if: always()
+        env:
+          AWS_REGION: eu-west-2
+          BUCKET_NAME: artilleryio-test-data-${{ secrets.AWS_ACCOUNT_ID }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          REPORT_URL="https://$BUCKET_NAME.s3.${AWS_REGION}.amazonaws.com/reports/$RUN_ID/psu_load_test.json.html"
+          echo "Test report is hosted at: $REPORT_URL" >> "$GITHUB_STEP_SUMMARY"
+          echo "::set-output name=report_url::$REPORT_URL"

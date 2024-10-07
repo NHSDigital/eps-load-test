@@ -6,13 +6,15 @@ const logger = pino()
 let oauthToken
 let tokenExpiryTime
 
-function getBody() {
+export function getBody(isValid = true) {
+  // If this is intended to be a failed request, mangle the prescription ID.
+  const prescriptionID = isValid ? shortPrescId() : invalidShortPrescId();
+
   const task_identifier = uuidv4()
   const prescriptionOrderItemNumber = uuidv4()
   const nhsNumber = "9449304130"
   const currentTimestamp = new Date().toISOString()
   const odsCode = "C9Z1O"
-  const prescriptionID = shortPrescId()
   const status = "in-progress"
   const businessStatus = "With Pharmacy"
   const body = {
@@ -91,13 +93,28 @@ function shortPrescId() {
   prescriptionID += checkDigit
   return prescriptionID
 }
+  
+function invalidShortPrescId() {
+  // Generate an invalid prescription ID by removing the last character
+  let invalidId = shortPrescId();
+  invalidId = invalidId.slice(0, -1); // Remove last character to invalidate
+  return invalidId;
+}
 
 export async function getSharedAuthToken(vuContext) {
   // This checks if we have a valid oauth token and if not gets a new one
   if (!tokenExpiryTime || tokenExpiryTime < Date.now()) {
     logger.info("Token has expired. Fetching new token")
     logger.info(`Current expiry time: ${tokenExpiryTime}`)
-    const response = await getAccessToken(logger, vuContext.vars.target)
+
+    // Fetch keys from environment variables
+    const privateKey = process.env.psu_private_key
+    const api_key = process.env.psu_api_key
+    const kid = process.env.psu_kid
+
+    // And use them to fetch the access token
+    const response = await getAccessToken(logger, vuContext.vars.target, privateKey, api_key, kid)
+    
     tokenExpiryTime = Date.now() + response.expires_in * 1000
     oauthToken = response.access_token
     logger.info(`New expiry time: ${tokenExpiryTime}`)
@@ -108,8 +125,13 @@ export async function getSharedAuthToken(vuContext) {
 }
 
 export async function getPSUParams(requestParams, vuContext) {
+  // Some requests are intended to be invalid ones. 
+  // Check if this request is supposed to be valid, and fetch an appropriate body
+  const isValid = vuContext.scenario.tags.isValid
+  const body = getBody(isValid)
+
+  requestParams.json = body
   // This sets the body of the request and some variables so headers are unique
-  const body = getBody()
   requestParams.json = body
   vuContext.vars.x_request_id = uuidv4()
   vuContext.vars.x_correlation_id = uuidv4()

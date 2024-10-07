@@ -51,16 +51,14 @@ echo ${launch_config}
 # shellcheck disable=SC2090,SC2086
 npx artillery run-fargate \
     --environment "${environment}" \
-    --secret psu_api_key \
-    --secret psu_private_key \
-    --secret psu_kid \
+    --secret cpsu_api_key \
     --region eu-west-2 \
     --cluster artilleryio-cluster \
     --security-group-ids "${security_group}" \
     --subnet-ids "${vpc_subnets}" \
     --task-role-name "${artillery_worker_role_name}" \
     --dotenv runtimeenv.env \
-    --output psu_load_test.json \
-    artillery/psu_load_test.yml
+    --output cpsu_load_test.json \
+    artillery/cpsu_load_test.yml
 
-npx artillery report psu_load_test.json 
+npx artillery report cpsu_load_test.json 
