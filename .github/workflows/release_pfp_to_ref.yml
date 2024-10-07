@@ -1,0 +1,12 @@
+name: 'Release pfp to ref'
+on:
+  workflow_dispatch:
+jobs:
+  release_to_ref:
+    name: release_pfp_to_ref
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dummy step
+        shell: bash
+        run: |
+          echo "[DUMMY]"
