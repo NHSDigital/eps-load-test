@@ -64,4 +64,5 @@ jobs:
           name: packaged_code
           path: |
             .aws-sam/build
+            Makefile
       
