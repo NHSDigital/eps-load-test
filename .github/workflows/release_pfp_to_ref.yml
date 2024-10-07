@@ -2,11 +2,61 @@ name: 'Release pfp to ref'
 on:
   workflow_dispatch:
 jobs:
-  release_to_ref:
-    name: release_pfp_to_ref
+  get_issue_number:
     runs-on: ubuntu-latest
+    outputs:
+      issue_number: ${{steps.get_issue_number.outputs.result}}
+
     steps:
-      - name: Dummy step
-        shell: bash
+      - uses: actions/github-script@v7
+        name: get issue number
+        id: get_issue_number
+        with:
+          script: |
+            if (context.issue.number) {
+              // Return issue number if present
+              return context.issue.number;
+            } else {
+              // Otherwise return issue number from commit
+              return (
+                await github.rest.repos.listPullRequestsAssociatedWithCommit({
+                  commit_sha: context.sha,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                })
+              ).data[0].number;
+            }
+          result-encoding: string
+
+  get_commit_id:
+    runs-on: ubuntu-latest
+    outputs:
+      commit_id: ${{ steps.commit_id.outputs.commit_id }}
+    steps:
+      - name: Get Commit ID
+        id: commit_id
         run: |
-          echo "[DUMMY]"
+          echo "commit_id=${{ github.sha }}" >> "$GITHUB_OUTPUT"
+
+  package_code:
+    uses: ./.github/workflows/sam_package_code.yml
+
+  release_dummy_spine:
+    needs: [get_issue_number, package_code, get_commit_id]
+    uses: ./.github/workflows/sam_release_code.yml
+    with:
+      STACK_NAME: dummy-spine-${{needs.get_issue_number.outputs.issue_number}}
+      ARTIFACT_BUCKET_PREFIX: PR-${{needs.get_issue_number.outputs.issue_number}}
+      TARGET_ENVIRONMENT: dev-pr
+      APIGEE_ENVIRONMENT: internal-dev
+      ENABLE_MUTUAL_TLS: false
+      BUILD_ARTIFACT: packaged_code
+      TRUSTSTORE_FILE: pfp-truststore.pem
+      VERSION_NUMBER: PR-${{ needs.get_issue_number.outputs.issue_number }}
+      COMMIT_ID: ${{ needs.get_commit_id.outputs.commit_id }}
+      LOG_LEVEL: DEBUG
+      LOG_RETENTION_DAYS: 30
+      TOGGLE_GET_STATUS_UPDATES: true
+      ENABLE_ALERTS: false
+    secrets:
+      CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
