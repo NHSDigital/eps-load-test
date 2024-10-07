@@ -12,9 +12,6 @@ on:
       TARGET_ENVIRONMENT:
         required: true
         type: string
-      APIGEE_ENVIRONMENT:
-        required: true
-        type: string
       BUILD_ARTIFACT:
         required: true
         type: string
