@@ -1,0 +1,12 @@
+name: Run pfp load test
+on:
+  workflow_dispatch:
+jobs:
+  run_artillery:
+    name: Run artillery
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dummy step
+        shell: bash
+        run: |
+          echo "[DUMMY]"
