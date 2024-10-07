@@ -1,5 +1,5 @@
 config:
-  processor: "./helper.mjs"
+  processor: "./psu_entrypoint.mjs"
   plugins:
     expect: {}
     apdex: {}
@@ -18,13 +18,20 @@ config:
       target: https://internal-dev.api.service.nhs.uk/
     ref:
       target: https://ref.api.service.nhs.uk/
+    int:
+      target: https://int.api.service.nhs.uk/
+    pr:
+      target: https://psu-pr-{{ $env.prNumber }}.dev.eps.national.nhs.uk/
 
 before:
   flow:
     - function: "getSharedAuthToken"
 
 scenarios:
-  - name: "call psu"
+  - name: "call psu - successful"
+    weight: 90
+    tags:
+      isValid: true
     beforeRequest: "getPSUParams"
     flow:
       - function: "getSharedAuthToken"
@@ -36,3 +43,67 @@ scenarios:
             x-correlation-id: "{{ x_correlation_id }}"
           expect:
             - statusCode: 201
+
+  - name: "call psu - unsuccessful"
+    weight: 10
+    tags:
+      isValid: false
+    beforeRequest: "getPSUParams"
+    flow:
+      - function: "getSharedAuthToken"
+      - post:
+          url: "/prescription-status-update/"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+            x-request-id: "{{ x_request_id }}"
+            x-correlation-id: "{{ x_correlation_id }}"
+          expect:
+            - statusCode: 400
+
+  - name: "call check prescription status updates - successful"
+    weight: 90
+    tags:
+      isValid: true
+    flow:
+      - function: "getSharedAuthToken"
+      - get:
+          url: "/prescription-status-update/checkprescriptionstatusupdates"
+          qs:
+            odscode: C9Z1O
+            nhsnumber: "9449304130"
+            prescriptionid: "16B2E0-A83008-81C13H"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+            x-request-id: "{{ x_request_id }}"
+            x-correlation-id: "{{ x_correlation_id }}"
+          expect:
+            - statusCode: 200
+
+  - name: "get metadata - successful"
+    weight: 10
+    tags:
+      isValid: true
+    flow:
+      - function: "getSharedAuthToken"
+      - get:
+          url: "/prescription-status-update/metadata"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+            x-request-id: "{{ x_request_id }}"
+            x-correlation-id: "{{ x_correlation_id }}"
+          expect:
+            - statusCode: 200
+
+  - name: "get status - successful"
+    weight: 10
+    tags:
+      isValid: true
+    flow:
+      - get:
+          url: "/prescription-status-update/_status"
+          headers:
+            apikey: "{{ $env.status_api_token }}"
+            x-request-id: "{{ x_request_id }}"
+            x-correlation-id: "{{ x_correlation_id }}"
+          expect:
+            - statusCode: 200
