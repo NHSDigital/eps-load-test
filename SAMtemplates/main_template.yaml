@@ -192,3 +192,34 @@ Resources:
       LogGroupName: !Ref ApiGwAccessLogs
       FilterPattern: "" # All logs
       DestinationArn: !ImportValue lambda-resources:SplunkDeliveryStream
+
+  SpineCAChain:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: CA chain for spine
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
+  LambdaAccessSecretsPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - secretsmanager:GetSecretValue
+            Resource:
+              - !Ref SpineCAChain
+
+Outputs:
+  LambdaAccessSecretsPolicy:
+    Description: "Lambda Access Secrets Policy ARN"
+    Value: !GetAtt LambdaAccessSecretsPolicy.PolicyArn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "LambdaAccessSecretsPolicy"]]
+  SpineCAChain:
+    Description: SpineCAChain
+    Value: !GetAtt SpineCAChain.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "SpineCAChain"]]
