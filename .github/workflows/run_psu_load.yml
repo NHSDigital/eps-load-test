@@ -107,7 +107,7 @@ jobs:
             psu_load_test.json.html
 
       - name: Upload artifacts to S3
-        if: always()
+        if: ${{ secrets.AWS_ACCOUNT_ID }} != ''
         env:
           AWS_REGION: eu-west-2
           BUCKET_NAME: artilleryio-test-data-${{ secrets.AWS_ACCOUNT_ID }}
@@ -117,7 +117,7 @@ jobs:
           aws s3 cp psu_load_test.json.html s3://$BUCKET_NAME/reports/$RUN_ID/psu_load_test.json.html --acl public-read
 
       - name: Output link to HTML report
-        if: always()
+        if: secrets.AWS_ACCOUNT_ID != ''
         env:
           AWS_REGION: eu-west-2
           BUCKET_NAME: artilleryio-test-data-${{ secrets.AWS_ACCOUNT_ID }}
