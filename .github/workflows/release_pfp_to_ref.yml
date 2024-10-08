@@ -119,7 +119,7 @@ jobs:
           enable_mutual_tls: false
           LOG_LEVEL: DEBUG
           LOG_RETENTION_DAYS: 30
-          stack_name: psu-load-test
+          stack_name: pfp-load-test
           TARGET_ENVIRONMENT: ref
           target_service_search_server: ${{ secrets.TARGET_SERVICE_SEARCH_SERVER }}
           target_spine_server: dummy-spine-${{needs.get_issue_number.outputs.issue_number}}.ref.eps.national.nhs.uk
