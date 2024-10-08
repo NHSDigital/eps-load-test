@@ -61,7 +61,7 @@ scenarios:
             - statusCode: 400
 
   - name: "call check prescription status updates - successful"
-    weight: 90
+    weight: 0
     tags:
       isValid: true
     flow:
@@ -80,7 +80,7 @@ scenarios:
             - statusCode: 200
 
   - name: "get metadata - successful"
-    weight: 10
+    weight: 0
     tags:
       isValid: true
     flow:
@@ -95,7 +95,7 @@ scenarios:
             - statusCode: 200
 
   - name: "get status - successful"
-    weight: 10
+    weight: 0
     tags:
       isValid: true
     flow:
