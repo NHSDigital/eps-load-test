@@ -43,7 +43,8 @@ jobs:
         run: |
           echo "commit_id=${{ github.sha }}" >> "$GITHUB_OUTPUT"
 
-  release_to_ref:
+  release_pfp_to_ref:
+    needs: [get_issue_number]
     runs-on: ubuntu-latest
     permissions:
         id-token: write
@@ -120,11 +121,12 @@ jobs:
           LOG_RETENTION_DAYS: 30
           stack_name: psu-load-test
           TARGET_ENVIRONMENT: ref
+          target_service_search_server: ${{ secrets.TARGET_SERVICE_SEARCH_SERVER }}
+          target_spine_server: dummy-spine-${{needs.get_issue_number.outputs.issue_number}}.ref.eps.national.nhs.uk
           template_file: template.yaml
           TRUSTSTORE_FILE: psu-truststore.pem
           VERSION_NUMBER: load_test_${{ github.run_id }}
-          DYNAMODB_AUTOSCALE: true
-          DEPLOY_CHECK_PRESCRIPTION_STATUS_UPDATE: true
+          TOGGLE_GET_STATUS_UPDATES: true
           ENABLE_ALERTS: true
         run: ./release_code.sh
 
