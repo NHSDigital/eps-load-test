@@ -791,13 +791,13 @@ files = [
 
 [[package]]
 name = "packaging"
-version = "24.1"
+version = "24.2"
 description = "Core utilities for Python packages"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "packaging-24.1-py3-none-any.whl", hash = "sha256:5b8f2217dbdbd2f7f384c41c628544e6d52f2d0f53c6d0c3ea61aa5d1d7ff124"},
-    {file = "packaging-24.1.tar.gz", hash = "sha256:026ed72c8ed3fcce5bf8950572258698927fd1dbda10a5e981cdf0ac37f4f002"},
+    {file = "packaging-24.2-py3-none-any.whl", hash = "sha256:09abb1bccd265c01f4a3aa3f7a7db064b36514d2cba19a2f694fe6150451a759"},
+    {file = "packaging-24.2.tar.gz", hash = "sha256:c228a6dc5e932d346bc5739379109d49e8853dd8223571c7c5b55260edc0b97f"},
 ]
 
 [[package]]
@@ -893,19 +893,20 @@ tests = ["pytest", "pytest-cov", "pytest-lazy-fixtures"]
 
 [[package]]
 name = "proxygen-cli"
-version = "2.1.15"
+version = "2.1.17"
 description = "CLI for interacting with NHSD APIM's proxygen service"
 optional = false
 python-versions = "<4.0,>=3.9"
 files = [
-    {file = "proxygen_cli-2.1.15-py3-none-any.whl", hash = "sha256:d63e7c84214a8b484a3389590bf9c86f0569367ed820e9b6b30beedc475b6115"},
-    {file = "proxygen_cli-2.1.15.tar.gz", hash = "sha256:35666d6cb5e727771a0fbaba5b68e75fdda6bf02216b2f6b6219ef5f66449488"},
+    {file = "proxygen_cli-2.1.17-py3-none-any.whl", hash = "sha256:c04167e4ec87e4a3769927d3521697715d83d2ab021d465d4f60c7fd1bba2f32"},
+    {file = "proxygen_cli-2.1.17.tar.gz", hash = "sha256:ed762b7e0de61ac273e74a90cbfa6b304f428f75949dd756949f2d6bb1a6965c"},
 ]
 
 [package.dependencies]
 click = ">=8.1.3,<9.0.0"
 cryptography = ">=42,<44"
 lxml = ">=4.7.1,<5.0.0"
+packaging = ">=24.2,<25.0"
 pydantic = ">=1.9.1,<2.0.0"
 pyjwt = ">=2.3.0,<3.0.0"
 pyyaml = ">=6.0,<7.0"
@@ -1516,4 +1517,4 @@ termcolor = ">=2.3,<3.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "0f65918f3223bb2e886b609a6cd069ba643e2a31757a54e4f1aaf1129fefccf0"
+content-hash = "1bb6cb91d313de05b4bb6663cd3c8dd6d1fca5a0176acd9509c5b2a4b3850a2a"
