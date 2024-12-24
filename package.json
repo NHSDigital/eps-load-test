@@ -6,7 +6,7 @@
     "artillery": "^2.0.21",
     "axios": "^1.7.9",
     "jsonwebtoken": "^9.0.2",
-    "pino": "^9.5.0"
+    "pino": "^9.6.0"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.146",
