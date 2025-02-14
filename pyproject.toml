@@ -29,7 +29,7 @@ jsonpath-rw = "^1.4.0"
 semver = "^3.0.4"
 gitpython = "^3.1.44"
 pre-commit = "^4.1.0"
-cfn-lint = "^1.24.0"
+cfn-lint = "^1.25.1"
 proxygen-cli = "^2.1.19"
 
 [tool.poetry.dev-dependencies]
