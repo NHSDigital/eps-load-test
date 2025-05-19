@@ -15,7 +15,7 @@
     "@typescript-eslint/parser": "^8.32.1",
     "aws-lambda": "^1.0.7",
     "esbuild": "^0.25.4",
-    "eslint": "^9.26.0",
+    "eslint": "^9.27.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-import-newlines": "^1.4.0",
     "eslint-plugin-prettier": "^5.4.0",
