@@ -47,7 +47,7 @@ jobs:
           ref: ${{ env.BRANCH_NAME }}
 
       - name: Install asdf
-        uses: asdf-vm/actions/setup@05e0d2ed97b598bfce82fd30daf324ae0c4570e6
+        uses: asdf-vm/actions/setup@1902764435ca0dd2f3388eea723a4f92a4eb8302
         with:
           asdf_branch: v0.14.0
       
@@ -61,7 +61,7 @@ jobs:
             ${{ runner.os }}-asdf-
       
       - name: Install asdf dependencies in .tool-versions
-        uses: asdf-vm/actions/install@05e0d2ed97b598bfce82fd30daf324ae0c4570e6
+        uses: asdf-vm/actions/install@1902764435ca0dd2f3388eea723a4f92a4eb8302
         with:
           asdf_branch: v0.14.0
         env:
