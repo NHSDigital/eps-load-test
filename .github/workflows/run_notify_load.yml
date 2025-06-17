@@ -22,7 +22,7 @@ on:
       maxVusers:
         description: 'Maximum number of vusers to create'
         required: true
-        default: '500'
+        default: '10000'
 
 jobs:
   run_artillery:
@@ -95,7 +95,7 @@ jobs:
           rampUpDuration: ${{ github.event.inputs.rampUpDuration }}
           maxVusers: ${{ github.event.inputs.maxVusers }}
         run: |
-          ./scripts/run_psu_load_test.sh 
+          ./scripts/run_notify_load_test.sh 
 
       - uses: actions/upload-artifact@v4
         if: always()
@@ -103,8 +103,8 @@ jobs:
         with:
           name: test_report
           path: |
-            psu_load_test.json
-            psu_load_test.json.html
+            notify_load_test.json
+            notify_load_test.json.html
 
       - name: Upload artifacts to S3, if we are using REF environment
         if: github.event.inputs.environment == 'ref'
@@ -114,8 +114,8 @@ jobs:
           BUCKET_NAME: artilleryio-test-data-${{ secrets.AWS_ACCOUNT_ID }}
           RUN_ID: ${{ github.run_id }}
         run: |
-          aws s3 cp psu_load_test.json s3://$BUCKET_NAME/reports/$RUN_ID/psu_load_test.json --acl public-read
-          aws s3 cp psu_load_test.json.html s3://$BUCKET_NAME/reports/$RUN_ID/psu_load_test.json.html --acl public-read
+          aws s3 cp notify_load_test.json s3://$BUCKET_NAME/reports/$RUN_ID/notify_load_test.json --acl public-read
+          aws s3 cp notify_load_test.json.html s3://$BUCKET_NAME/reports/$RUN_ID/notify_load_test.json.html --acl public-read
 
       - name: Output link to HTML report
         if: github.event.inputs.environment == 'ref'
@@ -124,6 +124,6 @@ jobs:
           BUCKET_NAME: artilleryio-test-data-${{ secrets.AWS_ACCOUNT_ID }}
           RUN_ID: ${{ github.run_id }}
         run: |
-          REPORT_URL="https://$BUCKET_NAME.s3.${AWS_REGION}.amazonaws.com/reports/$RUN_ID/psu_load_test.json.html"
+          REPORT_URL="https://$BUCKET_NAME.s3.${AWS_REGION}.amazonaws.com/reports/$RUN_ID/notify_load_test.json.html"
           echo "Test report is hosted at: $REPORT_URL" >> "$GITHUB_STEP_SUMMARY"
           echo "::set-output name=report_url::$REPORT_URL"
