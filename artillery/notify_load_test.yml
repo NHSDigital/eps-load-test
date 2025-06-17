@@ -1,15 +1,15 @@
 config:
   processor: "./notify_entrypoint.mjs"
   phases:
-    - name: ramp-up
-      duration: "10m"
-      arrivalRate: 20
-      rampTo: 100
-      maxVusers: 1000
-    - name: steady-state
-      duration: "30m"
-      arrivalRate: 100
-      maxVusers: 1000
+    - name: ramp up phase
+      duration: "{{ $env.rampUpDuration }}"
+      arrivalRate: 1
+      rampTo: "{{ $env.arrivalRate }}"
+      maxVusers: "{{ $env.maxVusers }}"
+    - name: run phase
+      duration: "{{ $env.duration }}"
+      arrivalRate: "{{ $env.arrivalRate }}"
+      maxVusers: "{{ $env.maxVusers }}"
   environments:
     dev:
       target: https://internal-dev.api.service.nhs.uk
