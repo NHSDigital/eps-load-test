@@ -7,31 +7,27 @@ const logger = pino()
 
 const NUM_ODS_CODES = 10000
 
-// make a list of 10k ODS codes, using the known-valid ones as a seed
-const fullOdsCodes = (() => {
-    const set = new Set(allowedOdsCodes)
-    const codes = [...allowedOdsCodes]
-    
-    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    const numbers = "0123456789"
-    
-    while (codes.length < NUM_ODS_CODES) {
-        let c = ""
-        for (let i = 0; i < 2; i++) {
-            c += letters.charAt(Math.floor(Math.random() * letters.length))
-        }
-        for (let i = 0; i < 3; i++) {
-            c += numbers.charAt(Math.floor(Math.random() * numbers.length))
-        }
-        
-        if (!set.has(c)) {
-            set.add(c)
-            codes.push(c)
-        }
-    }
-    
-    return codes
-})()
+const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const DIGITS = "0123456789";
+
+const randomChar = (chars) => chars[Math.floor(Math.random() * chars.length)];
+
+/** Generate one two-letter, three-digit ODS code, e.g. "AB123" */
+const generateOdsCode = () =>
+  `${randomChar(LETTERS)}${randomChar(LETTERS)}${randomChar(DIGITS)}${randomChar(DIGITS)}${randomChar(DIGITS)}`;
+
+function buildFullOdsCodes(targetCount, seedCodes) {
+  const codes = new Set(seedCodes);
+
+  while (codes.size < targetCount) {
+    codes.add(generateOdsCode());
+  }
+
+  return Array.from(codes);
+}
+
+/** The complete list of 10k ODS codes */
+const fullOdsCodes = buildFullOdsCodes(NUM_ODS_CODES, allowedOdsCodes);
 
 function computeCheckDigit(nhsNumber) {
     const factors = [10,9,8,7,6,5,4,3,2]
