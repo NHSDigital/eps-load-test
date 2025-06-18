@@ -12,13 +12,13 @@ config:
       maxVusers: "{{ $env.maxVusers }}"
   environments:
     dev:
-      target: https://internal-dev.api.service.nhs.uk
+      target: https://internal-dev.api.service.nhs.uk/
     ref:
-      target: https://ref.api.service.nhs.uk
+      target: https://ref.api.service.nhs.uk/
     int:
-      target: https://int.api.service.nhs.uk
+      target: https://int.api.service.nhs.uk/
     pr:
-      target: https://psu-pr-{{ prNumber }}.dev.eps.national.nhs.uk
+      target: https://psu-pr-{{ prNumber }}.dev.eps.national.nhs.uk/
   defaults:
     headers:
       Authorization: "Bearer {{ authToken }}"
@@ -29,21 +29,19 @@ scenarios:
     # grab token once per VU
     before:
       - function: getSharedAuthToken
-
+      
     flow:
       - function: initUser
 
       # for each prescription (number of prescriptions is variable)
       - loop:
-          - count: "{{ prescriptionCount }}"
-            steps:
-              - beforeRequest: generatePrescData
-              - post:
-                  url: "/prescription-status-update/"
-                  headers:
-                    x-request-id:     "{{ x_request_id }}"
-                    x-correlation-id: "{{ x_correlation_id }}"
-                  expect:
-                    - statusCode: 201
-              # wait before next prescription
-              - think: "{{ nextDelay }}"
+          - post:
+              url: "/prescription-status-update/"
+              beforeRequest: "generatePrescData"
+              headers:
+                x-request-id:     "{{ x_request_id }}"
+                x-correlation-id: "{{ x_correlation_id }}"
+              expect:
+                - statusCode: 201
+          - think: "{{ nextDelay }}"
+        count: "{{ prescriptionCount }}"

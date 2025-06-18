@@ -1,11 +1,11 @@
 import {v4 as uuidv4}   from "uuid"
 import pino from "pino"
 import {getSharedAuthToken, getBody} from "./helper/psu.mjs"
-import {allowedOdsCodes} from "./helper/allowed_odscodes.mjs"
+import {allowedOdsCodes, blockedOdsCodes} from "./helper/odscodes.mjs"
+
+export { getSharedAuthToken }
 
 const logger = pino()
-
-const NUM_ODS_CODES = 1000
 
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const DIGITS = "0123456789";
@@ -26,8 +26,8 @@ function buildFullOdsCodes(targetCount, seedCodes) {
   return Array.from(codes);
 }
 
-/** The complete list of 10k ODS codes */
-const fullOdsCodes = buildFullOdsCodes(NUM_ODS_CODES, allowedOdsCodes);
+// The complete list of ODS codes
+const fullOdsCodes = allowedOdsCodes.concat(blockedOdsCodes)
 
 function computeCheckDigit(nhsNumber) {
     const factors = [10,9,8,7,6,5,4,3,2]
@@ -71,11 +71,13 @@ export function initUser(context, events, done) {
     if (prescriptionCount < 1) prescriptionCount = 1 // just truncate at 1.
     context.vars.prescriptionCount  = prescriptionCount
     
+    logger.info(`Patient ${context.vars.nhsNumber}, ODS ${context.vars.odsCode} has ${context.vars.prescriptionCount} prescriptions`)
+    
     done()
 }
 
-// beforeEach request
 export function generatePrescData(requestParams, context, ee, next) {
+  logger.info(`Generating a prescription for patient ${context.vars.nhsNumber}`)
   const body = getBody(
     true,                   /* isValid */   
     "ready to collect",     /* status */    
@@ -91,8 +93,8 @@ export function generatePrescData(requestParams, context, ee, next) {
   let delay = sampleNormal(150, 60)
   if (delay < 0) delay = 0
   context.vars.nextDelay = delay
+  logger.info(`Patient ${context.vars.nhsNumber} will think for ${context.vars.nextDelay} seconds`)
   
   next()
 }
 
-export { getSharedAuthToken }

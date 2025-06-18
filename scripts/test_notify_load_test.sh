@@ -55,6 +55,7 @@ EOF
 
 echo "Running Artillery test locally..."
 echo ""
+echo "Environment: ${environment}"
 echo "Max Virtual Users: ${maxVusers}"
 echo "Phase Duration: ${duration}"
 echo "Arrival Rate: ${arrivalRate}"
