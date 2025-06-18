@@ -52,33 +52,47 @@ function generateValidNhsNumber() {
   }
 }
 
-export function initUser(_, vuContext) {
-    // Generate data for a patient
-    vuContext.vars.odsCode = fullOdsCodes[Math.floor(Math.random()*fullOdsCodes.length)]
-    vuContext.vars.nhsNumber = generateValidNhsNumber()
+// Apparently Math.sampleNormal isn't a function? Do a quick Box-Muller transform instead
+function sampleNormal(mean = 0, sd = 1) {
+  let u = 0, v = 0;
+  // avoid zeros because of log(0)
+  while (u === 0) u = Math.random();
+  while (v === 0) v = Math.random();
+  const z = Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+  return z * sd + mean;
+}
 
-    let prescriptionCount = Math.round(Math.sampleNormal(3,1))
+export function initUser(context, events, done) {
+    // Generate data for a patient
+    context.vars.odsCode = fullOdsCodes[Math.floor(Math.random()*fullOdsCodes.length)]
+    context.vars.nhsNumber = generateValidNhsNumber()
+
+    let prescriptionCount = Math.round(sampleNormal(3,1))
     if (prescriptionCount < 1) prescriptionCount = 1 // just truncate at 1.
-    vuContext.vars.prescriptionCount  = prescriptionCount
+    context.vars.prescriptionCount  = prescriptionCount
+    
+    done()
 }
 
 // beforeEach request
-export function generatePrescData(requestParams, vuContext) {
+export function generatePrescData(requestParams, context, ee, next) {
   const body = getBody(
-    true,                       /* isValid */   
-    "ready to collect",         /* status */    
-    vuContext.vars.odsCode,     /* odsCode */   
-    vuContext.vars.nhsNumber    /* nhsNumber */ 
+    true,                   /* isValid */   
+    "ready to collect",     /* status */    
+    context.vars.odsCode,   /* odsCode */   
+    context.vars.nhsNumber  /* nhsNumber */ 
   )
   
   requestParams.json = body
-  vuContext.vars.x_request_id = uuidv4()
-  vuContext.vars.x_correlation_id = uuidv4()
+  context.vars.x_request_id = uuidv4()
+  context.vars.x_correlation_id = uuidv4()
 
   // Wait this long between requests
-  let delay = Math.sampleNormal(150, 60)
+  let delay = sampleNormal(150, 60)
   if (delay < 0) delay = 0
-  vuContext.vars.nextDelay = delay
+  context.vars.nextDelay = delay
+  
+  next()
 }
 
 export { getSharedAuthToken }
