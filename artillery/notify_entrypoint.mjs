@@ -5,7 +5,7 @@ import {allowedOdsCodes} from "./allowed_odsCodes.js"
 
 const logger = pino()
 
-const NUM_ODS_CODES = 10000
+const NUM_ODS_CODES = 1000
 
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const DIGITS = "0123456789";
