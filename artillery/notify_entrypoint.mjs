@@ -1,7 +1,7 @@
 import {v4 as uuidv4}   from "uuid"
 import pino from "pino"
-import {getSharedAuthToken, getBody} from "./psu_entrypoint.mjs"
-import {allowedOdsCodes} from "./allowed_odsCodes.js"
+import {getSharedAuthToken, getBody} from "./helper/psu.mjs"
+import {allowedOdsCodes} from "./helper/allowed_odscodes.mjs"
 
 const logger = pino()
 
