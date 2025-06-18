@@ -70,6 +70,7 @@ export function initUser(context, events, done) {
     let prescriptionCount = Math.round(sampleNormal(3,1))
     if (prescriptionCount < 1) prescriptionCount = 1 // just truncate at 1.
     context.vars.prescriptionCount  = prescriptionCount
+    context.vars.loopcount = 0
     
     logger.info(`Patient ${context.vars.nhsNumber}, ODS ${context.vars.odsCode} has ${context.vars.prescriptionCount} prescriptions`)
     
@@ -90,12 +91,20 @@ export function generatePrescData(requestParams, context, ee, next) {
   requestParams.json = body
   context.vars.x_request_id = uuidv4()
   context.vars.x_correlation_id = uuidv4()
+  
+  context.vars.loopcount += 1
 
   // Wait this long between requests
-  let delay = sampleNormal(60, 60)
-  while (delay < 0) delay = sampleNormal(60, 60)
+  let meanDelay = 10 // seconds
+  let stdDevDelay = 10 // seconds
+  let delay = 0
+  if (context.vars.loopcount < context.vars.prescriptionCount) {
+    delay = sampleNormal(meanDelay, stdDevDelay)
+    while (delay < 0) delay = sampleNormal(meanDelay, stdDevDelay)
+  }
+
   context.vars.nextDelay = delay
-  logger.info(`Patient ${context.vars.nhsNumber} will think for ${context.vars.nextDelay} seconds`)
+  logger.info(`Patient ${context.vars.nhsNumber} (on loop ${context.vars.loopcount}) will think for ${context.vars.nextDelay} seconds`)
   
   next()
 }
