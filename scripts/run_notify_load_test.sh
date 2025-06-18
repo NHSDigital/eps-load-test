@@ -20,11 +20,6 @@ if [ -z "${arrivalRate}" ]; then
     exit 1
 fi
 
-if [ -z "${rampUpDuration}" ]; then
-    echo "rampUpDuration is unset or set to the empty string"
-    exit 1
-fi
-
 if ! [[ "${environment}" =~ ^(dev|ref)$ ]]
 then 
     echo "environment must be dev or ref"
@@ -43,7 +38,6 @@ cat <<EOF > runtimeenv.env
 maxVusers=$maxVusers
 duration=$duration
 arrivalRate=$arrivalRate
-rampUpDuration=$rampUpDuration
 EOF
 
 echo ${launch_config}

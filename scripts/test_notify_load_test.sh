@@ -65,4 +65,4 @@ npx artillery run \
     /workspaces/eps-load-test/artillery/notify_load_test.yml
 
 # Generate a report from the test results
-npx /workspaces/eps-load-test/artillery report notify_load_test.json
+npx artillery report notify_load_test.json

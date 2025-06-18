@@ -59,4 +59,4 @@ npx artillery run \
     /workspaces/eps-load-test/artillery/cpsu_load_test.yml
 
 # Generate a report from the test results
-npx /workspaces/eps-load-test/artillery report cpsu_load_test.json
+npx artillery report cpsu_load_test.json
