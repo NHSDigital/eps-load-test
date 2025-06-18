@@ -21,11 +21,6 @@ if [ -z "${arrivalRate}" ]; then
     exit 1
 fi
 
-if [ -z "${rampUpDuration}" ]; then
-    echo "rampUpDuration is unset or set to the empty string"
-    exit 1
-fi
-
 if [ -z "${psu_api_key}" ]; then
     echo "psu_api_key is unset or set to the empty string"
     exit 1
@@ -47,7 +42,6 @@ cat <<EOF > runtimeenv.env
 maxVusers=${maxVusers}
 duration=${duration}
 arrivalRate=${arrivalRate}
-rampUpDuration=${rampUpDuration}
 psu_api_key="${psu_api_key}"
 psu_private_key="${psu_private_key}"
 psu_kid="${psu_kid}"
@@ -57,9 +51,8 @@ echo "Running Artillery test locally..."
 echo ""
 echo "Environment: ${environment}"
 echo "Max Virtual Users: ${maxVusers}"
-echo "Phase Duration: ${duration}"
+echo "Run Phase Duration: ${duration}"
 echo "Arrival Rate: ${arrivalRate}"
-echo "Ramp Up Duration: ${rampUpDuration}"
 echo ""
 
 set -e

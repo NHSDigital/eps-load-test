@@ -80,18 +80,20 @@ export function generatePrescData(requestParams, context, ee, next) {
   logger.info(`Generating a prescription for patient ${context.vars.nhsNumber}`)
   const body = getBody(
     true,                   /* isValid */   
-    "ready to collect",     /* status */    
+    "completed",            /* status */    
     context.vars.odsCode,   /* odsCode */   
-    context.vars.nhsNumber  /* nhsNumber */ 
+    context.vars.nhsNumber, /* nhsNumber */ 
+    "ready to collect"      /* Item status */
   )
+  // The body is fine - it works when I put it in postman
   
   requestParams.json = body
   context.vars.x_request_id = uuidv4()
   context.vars.x_correlation_id = uuidv4()
 
   // Wait this long between requests
-  let delay = sampleNormal(150, 60)
-  if (delay < 0) delay = 0
+  let delay = sampleNormal(60, 60)
+  while (delay < 0) delay = sampleNormal(60, 60)
   context.vars.nextDelay = delay
   logger.info(`Patient ${context.vars.nhsNumber} will think for ${context.vars.nextDelay} seconds`)
   

@@ -132,7 +132,6 @@ export async function getPSUParams(requestParams, vuContext) {
   const isValid = vuContext.scenario.tags.isValid
   const body = getBody(isValid)
 
-  requestParams.json = body
   // This sets the body of the request and some variables so headers are unique
   requestParams.json = body
   vuContext.vars.x_request_id = uuidv4()

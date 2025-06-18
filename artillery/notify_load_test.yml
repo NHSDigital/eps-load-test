@@ -1,11 +1,9 @@
 config:
   processor: "./notify_entrypoint.mjs"
+  plugins:
+    expect: {}
+    apdex: {}
   phases:
-    - name: ramp up phase
-      duration: "{{ $env.rampUpDuration }}"
-      arrivalRate: 1
-      rampTo: "{{ $env.arrivalRate }}"
-      maxVusers: "{{ $env.maxVusers }}"
     - name: run phase
       duration: "{{ $env.duration }}"
       arrivalRate: "{{ $env.arrivalRate }}"
@@ -19,17 +17,14 @@ config:
       target: https://int.api.service.nhs.uk/
     pr:
       target: https://psu-pr-{{ prNumber }}.dev.eps.national.nhs.uk/
-  defaults:
-    headers:
-      Authorization: "Bearer {{ authToken }}"
+
+before:
+  flow:
+    - function: getSharedAuthToken
 
 scenarios:
   - name: dynamic PSU calls for each patient
   
-    # grab token once per VU
-    before:
-      - function: getSharedAuthToken
-      
     flow:
       - function: initUser
 
@@ -39,9 +34,10 @@ scenarios:
               url: "/prescription-status-update/"
               beforeRequest: "generatePrescData"
               headers:
+                Authorization: "Bearer {{ authToken }}"
                 x-request-id:     "{{ x_request_id }}"
                 x-correlation-id: "{{ x_correlation_id }}"
               expect:
                 - statusCode: 201
-          - think: "{{ nextDelay }}"
+          - think: "{{ nextDelay }}seconds"
         count: "{{ prescriptionCount }}"
