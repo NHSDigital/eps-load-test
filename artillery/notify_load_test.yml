@@ -35,17 +35,15 @@ scenarios:
 
       # for each prescription (number of prescriptions is variable)
       - loop:
-          count: "{{ prescriptionCount }}"
-          steps:
-            - beforeRequest: generatePrescData
-
-            - post:
-                url: "/prescription-status-update/"
-                headers:
-                  x-request-id:     "{{ x_request_id }}"
-                  x-correlation-id: "{{ x_correlation_id }}"
-                expect:
-                  - statusCode: 201
-
-            # wait before next prescription
-            - think: "{{ nextDelay }}"
+          - count: "{{ prescriptionCount }}"
+            steps:
+              - beforeRequest: generatePrescData
+              - post:
+                  url: "/prescription-status-update/"
+                  headers:
+                    x-request-id:     "{{ x_request_id }}"
+                    x-correlation-id: "{{ x_correlation_id }}"
+                  expect:
+                    - statusCode: 201
+              # wait before next prescription
+              - think: "{{ nextDelay }}"
