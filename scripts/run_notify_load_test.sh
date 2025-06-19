@@ -1,5 +1,16 @@
 #!/usr/bin/env bash
 
+
+if [ -z "${artillery_key}" ]; then
+    echo "artillery_key is unset or set to the empty string"
+    exit 1
+fi
+
+if [ -z "${environment}" ]; then
+    echo "environment is unset or set to the empty string"
+    exit 1
+fi
+
 if [ -z "${maxVusers}" ]; then
     echo "maxVusers is unset or set to the empty string"
     exit 1
@@ -7,11 +18,6 @@ fi
 
 if [ -z "${duration}" ]; then
     echo "duration is unset or set to the empty string"
-    exit 1
-fi
-
-if [ -z "${environment}" ]; then
-    echo "environment is unset or set to the empty string"
     exit 1
 fi
 
@@ -53,7 +59,7 @@ npx artillery run-fargate \
     --security-group-ids "${security_group}" \
     --subnet-ids "${vpc_subnets}" \
     --task-role-name "${artillery_worker_role_name}" \
-    --dotenv runtimeenv.env \
+    --env-file runtimeenv.env \
     --output notify_load_test.json \
     artillery/notify_load_test.yml
 
