@@ -78,7 +78,7 @@ export function initUser(context, events, done) {
 }
 
 export function generatePrescData(requestParams, context, ee, next) {
-  logger.info(`Generating a prescription for patient ${context.vars.nhsNumber}`)
+  logger.debug(`Generating a prescription for patient ${context.vars.nhsNumber}`)
   const body = getBody(
     true,                   /* isValid */   
     "completed",            /* status */    
@@ -104,7 +104,7 @@ export function generatePrescData(requestParams, context, ee, next) {
   }
 
   context.vars.nextDelay = delay
-  logger.info(`Patient ${context.vars.nhsNumber} (on loop ${context.vars.loopcount}) will think for ${context.vars.nextDelay} seconds`)
+  logger.debug(`Patient ${context.vars.nhsNumber} (on prescription update ${context.vars.loopcount}/${context.vars.prescriptionCount}) will think for ${context.vars.nextDelay} seconds`)
   
   next()
 }
