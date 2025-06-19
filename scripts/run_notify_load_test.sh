@@ -53,6 +53,6 @@ npx artillery run-fargate \
     --task-role-name "${artillery_worker_role_name}" \
     --env-file runtimeenv.env \
     --output notify_load_test.json \
-    notify_load_test.yml
+    artillery/notify_load_test.yml
 
 npx artillery report notify_load_test.json 
