@@ -114,6 +114,8 @@ export async function getSharedAuthToken(vuContext) {
     const api_key = process.env.psu_api_key
     const kid = process.env.psu_kid
 
+    logger.info("Secrets:", {privateKey, api_key, kid})
+
     // And use them to fetch the access token
     const response = await getAccessToken(logger, vuContext.vars.target, privateKey, api_key, kid)
     
