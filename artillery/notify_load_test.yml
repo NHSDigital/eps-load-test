@@ -30,6 +30,7 @@ scenarios:
 
       # for each prescription (number of prescriptions is variable)
       - loop:
+          - function: getSharedAuthToken
           - post:
               url: "/prescription-status-update/"
               beforeRequest: "generatePrescData"
