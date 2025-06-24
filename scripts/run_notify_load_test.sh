@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
 
-if [ -z "${artillery_key}" ]; then
-    echo "artillery_key is unset or set to the empty string"
-    exit 1
-fi
-
 if [ -z "${environment}" ]; then
     echo "environment is unset or set to the empty string"
     exit 1
