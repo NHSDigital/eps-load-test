@@ -2,7 +2,7 @@
 
 
 if [ -z "${artillery_key}" ]; then
-    echo "artillery_key is unset or set to the empty string"
+    echo "artillery_key is unset or set to the empty string. Get one from here: https://app.artillery.io/"
     exit 1
 fi
 
