@@ -37,3 +37,6 @@ local-cpsu:
 
 local-psu:
 	./scripts/test_psu_load_test.sh
+
+local-notify:
+	./scripts/test_notify_load_test.sh

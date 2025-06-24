@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 
 
+if [ -z "${artillery_key}" ]; then
+    echo "artillery_key is unset or set to the empty string"
+    exit 1
+fi
+
 if [ -z "${environment}" ]; then
     echo "environment is unset or set to the empty string"
     exit 1
@@ -21,13 +26,18 @@ if [ -z "${arrivalRate}" ]; then
     exit 1
 fi
 
-if [ -z "${rampUpDuration}" ]; then
-    echo "rampUpDuration is unset or set to the empty string"
+if [ -z "${psu_api_key}" ]; then
+    echo "psu_api_key is unset or set to the empty string"
     exit 1
 fi
 
-if [ -z "${cpsu_api_key}" ]; then
-    echo "cpsu_api_key is unset or set to the empty string"
+if [ -z "${psu_private_key}" ]; then
+    echo "psu_private_key is unset or set to the empty string"
+    exit 1
+fi
+
+if [ -z "${psu_kid}" ]; then
+    echo "psu_kid is unset or set to the empty string"
     exit 1
 fi
 
@@ -37,16 +47,18 @@ cat <<EOF > runtimeenv.env
 maxVusers=${maxVusers}
 duration=${duration}
 arrivalRate=${arrivalRate}
-rampUpDuration=${rampUpDuration}
-cpsu_api_key="${cpsu_api_key}"
+psu_api_key="${psu_api_key}"
+psu_private_key="${psu_private_key}"
+psu_kid="${psu_kid}"
+artillery_key="${artillery_key}"
 EOF
 
 echo "Running Artillery test locally..."
 echo ""
+echo "Environment: ${environment}"
 echo "Max Virtual Users: ${maxVusers}"
-echo "Phase Duration: ${duration}"
+echo "Run Phase Duration: ${duration}"
 echo "Arrival Rate: ${arrivalRate}"
-echo "Ramp Up Duration: ${rampUpDuration}"
 echo ""
 
 set -e
@@ -55,8 +67,6 @@ set -e
 npx artillery run \
     -e "${environment}" \
     --env-file /workspaces/eps-load-test/runtimeenv.env \
-    --output /workspaces/eps-load-test/cpsu_load_test.json \
-    /workspaces/eps-load-test/artillery/cpsu_load_test.yml
-
-# Generate a report from the test results
-npx artillery report cpsu_load_test.json
+    --output /workspaces/eps-load-test/notify_load_test.json \
+    --record --key ${artillery_key} \
+    /workspaces/eps-load-test/artillery/notify_load_test.yml

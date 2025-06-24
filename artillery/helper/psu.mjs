@@ -6,17 +6,19 @@ const logger = pino()
 let oauthToken
 let tokenExpiryTime
 
-export function getBody(isValid = true) {
+export function getBody(
+  isValid = true, 
+  status = "in-progress",
+  odsCode = "C9Z10", 
+  nhsNumber = "9449304130",
+  businessStatus = "With Pharmacy",
+) {
   // If this is intended to be a failed request, mangle the prescription ID.
   const prescriptionID = isValid ? shortPrescId() : invalidShortPrescId();
 
   const task_identifier = uuidv4()
   const prescriptionOrderItemNumber = uuidv4()
-  const nhsNumber = "9449304130"
   const currentTimestamp = new Date().toISOString()
-  const odsCode = "C9Z1O"
-  const status = "in-progress"
-  const businessStatus = "With Pharmacy"
   const body = {
     resourceType: "Bundle",
     type: "transaction",
@@ -130,7 +132,6 @@ export async function getPSUParams(requestParams, vuContext) {
   const isValid = vuContext.scenario.tags.isValid
   const body = getBody(isValid)
 
-  requestParams.json = body
   // This sets the body of the request and some variables so headers are unique
   requestParams.json = body
   vuContext.vars.x_request_id = uuidv4()
