@@ -8,17 +8,17 @@ on:
         required: true
         default: 'ref'
       arrivalRate:
-        description: 'The number of new users to add every second'
+        description: 'How many requests to send per second'
         required: true
-        default: '275'
+        default: '100'
       duration:
-        description: 'The duration of the main test'
+        description: 'The duration of the test'
         required: true
         default: '900'
       maxVusers:
-        description: 'Maximum number of vusers to create'
+        description: 'Maximum number of virtual users to create'
         required: true
-        default: '1000'
+        default: '100'
 
 jobs:
   run_artillery:
