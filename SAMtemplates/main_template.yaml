@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  prescription status update api sandbox template
+  Template for a dummy spine
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
@@ -18,15 +18,6 @@ Globals:
       - !Sub "arn:aws:lambda:${AWS::Region}:580247275435:layer:LambdaInsightsExtension:38"
 
 Parameters:
-  TruststoreVersion:
-    Type: String
-    Default: none
-
-  EnableMutualTLS:
-    Type: String
-    Default: false
-    AllowedValues: [true, false]
-
   EnableSplunk:
     Type: String
     Default: false
@@ -66,7 +57,6 @@ Parameters:
       ]
 
 Conditions:
-  ShouldUseMutualTLS: !Equals [true, !Ref EnableMutualTLS]
   ShouldUseSplunk: !Equals [true, !Ref EnableSplunk]
 
 Resources:
@@ -147,32 +137,7 @@ Resources:
             Fn::ImportValue: eps-route53-resources:EPS-ZoneID
         EndpointConfiguration: REGIONAL
         SecurityPolicy: TLS_1_2
-        MutualTlsAuthentication:
-          TruststoreUri:
-            "Fn::If":
-              - ShouldUseMutualTLS
-              - Fn::Join:
-                  - "/"
-                  - - "s3:/"
-                    - !Select [
-                        5,
-                        !Split [
-                          ":",
-                          Fn::ImportValue: account-resources:TrustStoreBucket,
-                        ],
-                      ]
-                    - "psu-sandbox-truststore.pem"
-              - !Ref "AWS::NoValue"
-          TruststoreVersion:
-            "Fn::If":
-              - ShouldUseMutualTLS
-              - !Ref TruststoreVersion
-              - !Ref "AWS::NoValue"
-      DisableExecuteApiEndpoint:
-        "Fn::If":
-          - ShouldUseMutualTLS
-          - true
-          - !Ref "AWS::NoValue"
+      DisableExecuteApiEndpoint: false
       AccessLogSettings:
         DestinationArn: !GetAtt ApiGwAccessLogs.Arn
         Format: "{ \
@@ -228,61 +193,14 @@ Resources:
       FilterPattern: "" # All logs
       DestinationArn: !ImportValue lambda-resources:SplunkDeliveryStream
 
-  ArtilleryBucket:
-    Type: AWS::S3::Bucket
+  SpineCAChain:
+    Type: AWS::SecretsManager::Secret
     Properties:
-      PublicAccessBlockConfiguration:
-        BlockPublicAcls: true
-        BlockPublicPolicy: true
-        IgnorePublicAcls: true
-        RestrictPublicBuckets: true
-      BucketName: !Sub "artilleryio-test-data-${AWS::AccountId}-${AWS::Region}"
-      BucketEncryption:
-        ServerSideEncryptionConfiguration:
-          - ServerSideEncryptionByDefault:
-              KMSMasterKeyID: !Sub "arn:aws:kms:${AWS::Region}:${AWS::AccountId}:${ArtilleryBucketKMSKeyAlias}"
-              SSEAlgorithm: "aws:kms"
+      Description: CA chain for spine
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
 
-  ArtilleryBucketPolicy:
-    Type: AWS::S3::BucketPolicy
-    Properties:
-      Bucket: !Ref ArtilleryBucket
-      PolicyDocument:
-        Statement:
-          - Effect: Deny
-            Principal: "*"
-            Action:
-              - s3:*
-            Resource:
-              - !Join ["", [!GetAtt ArtilleryBucket.Arn, "/*"]]
-              - !GetAtt ArtilleryBucket.Arn
-            Condition:
-              Bool:
-                aws:SecureTransport: false
-
-  ArtilleryBucketKMSKeyAlias:
-    Type: AWS::KMS::Alias
-    Properties:
-      AliasName: alias/ArtilleryBucketKMSKeyAlias
-      TargetKeyId: !Ref ArtilleryBucketKMSKey
-
-  ArtilleryBucketKMSKey:
-    Type: AWS::KMS::Key
-    Properties:
-      EnableKeyRotation: true
-      KeyPolicy:
-        Version: 2012-10-17
-        Id: key-s3
-        Statement:
-          - Sid: Enable IAM User Permissions
-            Effect: Allow
-            Principal:
-              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
-            Action:
-              - kms:*
-            Resource: "*"
-
-  ArtilleryLambdaManagedPolicy:
+  LambdaAccessSecretsPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       PolicyDocument:
@@ -290,43 +208,18 @@ Resources:
         Statement:
           - Effect: Allow
             Action:
-              - kms:DescribeKey
-              - kms:GenerateDataKey*
-              - kms:Encrypt
-              - kms:ReEncrypt*
-              - kms:Decrypt
-            Resource: !GetAtt ArtilleryBucketKMSKey.Arn
-          - Effect: Allow
-            Action:
-              - sqs:*
-            Resource: !Sub "arn:aws:sqs:*:${AWS::AccountId}:artilleryio*"
-          - Effect: Allow
-            Action:
-              - s3:GetObject*
-              - s3:PutObject*
-              - s3:GetBucket*
-              - s3:List*
-              - s3:HeadObject
+              - secretsmanager:GetSecretValue
             Resource:
-              - !Join ["", [!GetAtt ArtilleryBucket.Arn, "/*"]]
-              - !GetAtt ArtilleryBucket.Arn
+              - !Ref SpineCAChain
 
-  ArtilleryLambdaResources:
-    Type: AWS::Serverless::Application
-    Properties:
-      Location: functions/lambda_resources.yaml
-      Parameters:
-        StackName: !Ref AWS::StackName
-        LambdaName: !Sub ${AWS::StackName}-ArtilleryLambdaResources
-        LambdaArn: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${AWS::StackName}-ArtilleryLambdaResources
-        LogRetentionInDays: !Ref LogRetentionInDays
-        CloudWatchKMSKeyId: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
-        EnableSplunk: !Ref EnableSplunk
-        SplunkSubscriptionFilterRole: !ImportValue lambda-resources:SplunkSubscriptionFilterRole
-        SplunkDeliveryStreamArn: !ImportValue lambda-resources:SplunkDeliveryStream
-        IncludeAdditionalPolicies: true
-        AdditionalPolicies: !Join
-          - ","
-          - - !Ref ArtilleryLambdaManagedPolicy
-            - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-            - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+Outputs:
+  LambdaAccessSecretsPolicy:
+    Description: "Lambda Access Secrets Policy ARN"
+    Value: !GetAtt LambdaAccessSecretsPolicy.PolicyArn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "LambdaAccessSecretsPolicy"]]
+  SpineCAChain:
+    Description: SpineCAChain
+    Value: !GetAtt SpineCAChain.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "SpineCAChain"]]
