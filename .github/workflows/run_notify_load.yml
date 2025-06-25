@@ -8,11 +8,15 @@ on:
         required: true
         default: 'ref'
       arrivalRate:
-        description: 'How many requests to send per second'
+        description: 'How many requests to send per second during the main test'
         required: true
         default: '100'
       duration:
-        description: 'The duration of the test'
+        description: 'The duration of the main test'
+        required: true
+        default: '900'
+      rampUpDuration:
+        description: 'The duration of ramp-up phase of the test'
         required: true
         default: '900'
       maxVusers:
@@ -34,6 +38,7 @@ jobs:
           echo "## environment : ${{ github.event.inputs.environment }}" >> "$GITHUB_STEP_SUMMARY"
           echo "## arrivalRate : ${{ github.event.inputs.arrivalRate }}" >> "$GITHUB_STEP_SUMMARY"
           echo "## duration : ${{ github.event.inputs.duration }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "## rampUpDuration : ${{ github.event.inputs.rampUpDuration }}" >> "$GITHUB_STEP_SUMMARY"
           echo "## maxVusers : ${{ github.event.inputs.maxVusers }}" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Checkout repo

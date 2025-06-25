@@ -16,6 +16,11 @@ if [ -z "${duration}" ]; then
     exit 1
 fi
 
+if [ -z "${rampUpDuration}" ]; then
+    echo "rampUpDuration is unset or set to the empty string"
+    exit 1
+fi
+
 if [ -z "${arrivalRate}" ]; then
     echo "arrivalRate is unset or set to the empty string"
     exit 1
@@ -39,6 +44,7 @@ cat <<EOF > runtimeenv.env
 maxVusers=$maxVusers
 duration=$duration
 arrivalRate=$arrivalRate
+rampUpDuration=$rampUpDuration
 EOF
 
 echo ${launch_config}

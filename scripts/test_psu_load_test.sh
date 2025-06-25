@@ -41,6 +41,13 @@ if [ -z "${psu_kid}" ]; then
     exit 1
 fi
 
+# Check for Artillery Cloud key (optional)
+if [ -z "${artillery_key}" ]; then
+    echo "Warning: artillery_key is unset; running test without recording to Artillery Cloud."
+    RECORD_ARGS=""
+else
+    RECORD_ARGS="--record --key ${artillery_key}"
+fi
 
 # Create a dotenv file with the variables for Artillery
 cat <<EOF > runtimeenv.env
@@ -55,10 +62,12 @@ EOF
 
 echo "Running Artillery test locally..."
 echo ""
+echo "Environment: ${environment}"
 echo "Max Virtual Users: ${maxVusers}"
 echo "Phase Duration: ${duration}"
 echo "Arrival Rate: ${arrivalRate}"
-echo "Ramp Up Duration: ${rampUpDuration}"
+echo "Ramp-up Duration: ${rampUpDuration}"
+[ -n "${artillery_key}" ] && echo "Recording to Artillery Cloud with key: ${artillery_key}"
 echo ""
 
 set -e
@@ -66,9 +75,10 @@ set -e
 # Run the Artillery test locally
 npx artillery run \
     -e "${environment}" \
-    --env-file /workspaces/eps-load-test/runtimeenv.env \
-    --output /workspaces/eps-load-test/psu_load_test.json \
-    /workspaces/eps-load-test/artillery/psu_load_test.yml
+    --env-file "$(pwd)/runtimeenv.env" \
+    --output "$(pwd)/psu_load_test.json" \
+    $RECORD_ARGS \
+    "$(pwd)/artillery/psu_load_test.yml"
 
 # Generate a report from the test results
 npx artillery report psu_load_test.json

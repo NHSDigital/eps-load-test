@@ -4,6 +4,11 @@ config:
     expect: {}
     apdex: {}
   phases:
+    - name: ramp up phase
+      duration: "{{ $env.rampUpDuration }}"
+      arrivalRate: 1
+      rampTo: "{{ $env.arrivalRate }}"
+      maxVusers: "{{ $env.maxVusers }}"
     - name: run phase
       duration: "{{ $env.duration }}"
       arrivalRate: "{{ $env.arrivalRate }}"
