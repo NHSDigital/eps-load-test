@@ -26,8 +26,7 @@ if [ -z "${arrivalRate}" ]; then
     exit 1
 fi
 
-if ! [[ "${environment}" =~ ^(dev|ref)$ ]]
-then 
+if ! [[ "${environment}" =~ ^(dev|ref)$ ]]; then 
     echo "environment must be dev or ref"
     exit 1
 fi
@@ -40,11 +39,18 @@ export vpc_subnets
 artillery_worker_role_name=$(aws cloudformation list-exports --output json | jq -r '.Exports[] | select(.Name == "artillery-resources:ArtilleryWorkerRoleName") | .Value' | grep -o '[^:]*$')
 export artillery_worker_role_name
 
+if [ -z "${artillery_key}" ]; then
+    echo "artillery_key is unset. Running without --record to Artillery Cloud."
+    RECORD_ARGS=""
+else
+    RECORD_ARGS="--record --key ${artillery_key}"
+fi
+
 cat <<EOF > runtimeenv.env
-maxVusers=$maxVusers
-duration=$duration
-arrivalRate=$arrivalRate
-rampUpDuration=$rampUpDuration
+maxVusers=${maxVusers}
+duration=${duration}
+arrivalRate=${arrivalRate}
+rampUpDuration=${rampUpDuration}
 EOF
 
 echo ${launch_config}
@@ -60,6 +66,7 @@ npx artillery run-fargate \
     --task-role-name "${artillery_worker_role_name}" \
     --env-file runtimeenv.env \
     --output notify_load_test.json \
+    $RECORD_ARGS \
     artillery/notify_load_test.yml
 
-npx artillery report notify_load_test.json 
+npx artillery report notify_load_test.json
