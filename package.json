@@ -10,7 +10,7 @@
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.150",
-    "@types/node": "^24.0.3",
+    "@types/node": "^24.0.4",
     "@typescript-eslint/eslint-plugin": "^8.35.0",
     "@typescript-eslint/parser": "^8.34.0",
     "aws-lambda": "^1.0.7",
@@ -18,9 +18,9 @@
     "eslint": "^9.29.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-import-newlines": "^1.4.0",
-    "eslint-plugin-prettier": "^5.5.0",
+    "eslint-plugin-prettier": "^5.5.1",
     "license-checker": "^25.0.1",
-    "prettier": "^3.5.3",
+    "prettier": "^3.6.1",
     "prettier-eslint": "^16.4.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
