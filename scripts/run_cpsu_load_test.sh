@@ -57,7 +57,7 @@ npx artillery run-fargate \
     --security-group-ids "${security_group}" \
     --subnet-ids "${vpc_subnets}" \
     --task-role-name "${artillery_worker_role_name}" \
-    --dotenv runtimeenv.env \
+    --env-file runtimeenv.env \
     --output cpsu_load_test.json \
     artillery/cpsu_load_test.yml
 

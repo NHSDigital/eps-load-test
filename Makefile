@@ -10,6 +10,9 @@ compile-node:
 
 compile: compile-node
 
+aws-configure:
+	aws configure sso --region eu-west-2
+
 aws-login:
 	aws sso login --sso-session sso-session
 
@@ -37,3 +40,6 @@ local-cpsu:
 
 local-psu:
 	./scripts/test_psu_load_test.sh
+
+local-notify:
+	./scripts/test_notify_load_test.sh

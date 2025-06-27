@@ -54,9 +54,9 @@ set -e
 # Run the Artillery test locally
 npx artillery run \
     -e "${environment}" \
-    --dotenv /workspaces/eps-load-test/runtimeenv.env \
+    --env-file /workspaces/eps-load-test/runtimeenv.env \
     --output /workspaces/eps-load-test/cpsu_load_test.json \
     /workspaces/eps-load-test/artillery/cpsu_load_test.yml
 
 # Generate a report from the test results
-npx /workspaces/eps-load-test/artillery report cpsu_load_test.json
+npx artillery report cpsu_load_test.json
