@@ -28,12 +28,28 @@ before:
     - function: getSharedAuthToken
 
 scenarios:
-  - name: dynamic PSU calls for each patient
-  
+  - name: Allowed ODS code scenario
+    weight: 1
     flow:
-      - function: initUser
+      - function: initUserAllowed
+      - loop:
+          - function: getSharedAuthToken
+          - post:
+              url: "/prescription-status-update/"
+              beforeRequest: "generatePrescData"
+              headers:
+                Authorization: "Bearer {{ authToken }}"
+                x-request-id:     "{{ x_request_id }}"
+                x-correlation-id: "{{ x_correlation_id }}"
+              expect:
+                - statusCode: 201
+          - think: "{{ nextDelay }}seconds"
+        count: "{{ prescriptionCount }}"
 
-      # for each prescription (number of prescriptions is variable)
+  - name: Blocked ODS code scenario
+    weight: 3
+    flow:
+      - function: initUserBlocked
       - loop:
           - function: getSharedAuthToken
           - post:

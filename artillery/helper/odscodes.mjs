@@ -4,5 +4,5 @@ export const allowedOdsCodes = [
 ]
 
 export const blockedOdsCodes = [
-    // "B3J1Z"
+    "B3J1Z"
 ]
