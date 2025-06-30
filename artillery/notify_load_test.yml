@@ -47,7 +47,7 @@ scenarios:
         count: "{{ prescriptionCount }}"
 
   - name: Blocked ODS code scenario
-    weight: 3
+    weight: 0
     flow:
       - function: initUserBlocked
       - loop:
