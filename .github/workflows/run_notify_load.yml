@@ -8,21 +8,25 @@ on:
         required: true
         default: 'ref'
       arrivalRate:
-        description: 'The number of new users to add every second'
+        description: 'How many requests to send per second during the main test'
         required: true
-        default: '275'
+        default: '100'
       duration:
         description: 'The duration of the main test'
         required: true
         default: '900'
       rampUpDuration:
-        description: 'The duration to ramp up to the arrival rate'
+        description: 'The duration of ramp-up phase of the test'
         required: true
         default: '900'
       maxVusers:
-        description: 'Maximum number of vusers to create'
+        description: 'Maximum number of virtual users to create'
         required: true
-        default: '10000'
+        default: '100'
+      artillery_key:
+        description: 'Your Artillery cloud API key (optional – omit to run without recording)'
+        required: false
+        default: ''
 
 jobs:
   run_artillery:
@@ -40,6 +44,11 @@ jobs:
           echo "## duration : ${{ github.event.inputs.duration }}" >> "$GITHUB_STEP_SUMMARY"
           echo "## rampUpDuration : ${{ github.event.inputs.rampUpDuration }}" >> "$GITHUB_STEP_SUMMARY"
           echo "## maxVusers : ${{ github.event.inputs.maxVusers }}" >> "$GITHUB_STEP_SUMMARY"
+          if [ -n "${{ github.event.inputs.artillery_key }}" ]; then
+            echo "## artillery_key        : (provided)" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "## artillery_key        : (not provided)" >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -65,7 +74,7 @@ jobs:
         with:
           asdf_branch: v0.14.0
         env:
-            PYTHON_CONFIGURE_OPTS: --enable-shared
+          PYTHON_CONFIGURE_OPTS: --enable-shared
 
       - name: Install Dependencies
         run: make install
@@ -94,6 +103,7 @@ jobs:
           duration: ${{ github.event.inputs.duration }}
           rampUpDuration: ${{ github.event.inputs.rampUpDuration }}
           maxVusers: ${{ github.event.inputs.maxVusers }}
+          artillery_key: ${{ github.event.inputs.artillery_key }}
         run: |
           ./scripts/run_notify_load_test.sh 
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-
+# Required checks
 if [ -z "${environment}" ]; then
     echo "environment is unset or set to the empty string"
     exit 1
@@ -16,13 +16,13 @@ if [ -z "${duration}" ]; then
     exit 1
 fi
 
-if [ -z "${arrivalRate}" ]; then
-    echo "arrivalRate is unset or set to the empty string"
+if [ -z "${rampUpDuration}" ]; then
+    echo "rampUpDuration is unset or set to the empty string"
     exit 1
 fi
 
-if [ -z "${rampUpDuration}" ]; then
-    echo "rampUpDuration is unset or set to the empty string"
+if [ -z "${arrivalRate}" ]; then
+    echo "arrivalRate is unset or set to the empty string"
     exit 1
 fi
 
@@ -41,7 +41,7 @@ if [ -z "${psu_kid}" ]; then
     exit 1
 fi
 
-# Check for Artillery Cloud key (optional)
+# Check artillery_key but don't fail — just omit recording if absent
 if [ -z "${artillery_key}" ]; then
     echo "Warning: artillery_key is unset; running test without recording to Artillery Cloud."
     RECORD_ARGS=""
@@ -58,27 +58,25 @@ rampUpDuration=${rampUpDuration}
 psu_api_key="${psu_api_key}"
 psu_private_key="${psu_private_key}"
 psu_kid="${psu_kid}"
+artillery_key="${artillery_key}"
 EOF
 
 echo "Running Artillery test locally..."
 echo ""
 echo "Environment: ${environment}"
 echo "Max Virtual Users: ${maxVusers}"
-echo "Phase Duration: ${duration}"
-echo "Arrival Rate: ${arrivalRate}"
+echo "Run Phase Duration: ${duration}"
 echo "Ramp-up Duration: ${rampUpDuration}"
+echo "Arrival Rate: ${arrivalRate}"
 [ -n "${artillery_key}" ] && echo "Recording to Artillery Cloud with key: ${artillery_key}"
 echo ""
 
 set -e
 
-# Run the Artillery test locally
+# Run the Artillery test locally, conditionally including recording flags
 npx artillery run \
     -e "${environment}" \
     --env-file "$(pwd)/runtimeenv.env" \
-    --output "$(pwd)/psu_load_test.json" \
+    --output "$(pwd)/notify_load_test.json" \
     $RECORD_ARGS \
-    "$(pwd)/artillery/psu_load_test.yml"
-
-# Generate a report from the test results
-npx artillery report psu_load_test.json
+    "$(pwd)/artillery/notify_load_test.yml"

@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+
+if [ -z "${environment}" ]; then
+    echo "environment is unset or set to the empty string"
+    exit 1
+fi
+
 if [ -z "${maxVusers}" ]; then
     echo "maxVusers is unset or set to the empty string"
     exit 1
@@ -10,8 +16,8 @@ if [ -z "${duration}" ]; then
     exit 1
 fi
 
-if [ -z "${environment}" ]; then
-    echo "environment is unset or set to the empty string"
+if [ -z "${rampUpDuration}" ]; then
+    echo "rampUpDuration is unset or set to the empty string"
     exit 1
 fi
 
@@ -20,13 +26,7 @@ if [ -z "${arrivalRate}" ]; then
     exit 1
 fi
 
-if [ -z "${rampUpDuration}" ]; then
-    echo "rampUpDuration is unset or set to the empty string"
-    exit 1
-fi
-
-if ! [[ "${environment}" =~ ^(dev|ref)$ ]]
-then 
+if ! [[ "${environment}" =~ ^(dev|ref)$ ]]; then 
     echo "environment must be dev or ref"
     exit 1
 fi
@@ -39,11 +39,18 @@ export vpc_subnets
 artillery_worker_role_name=$(aws cloudformation list-exports --output json | jq -r '.Exports[] | select(.Name == "artillery-resources:ArtilleryWorkerRoleName") | .Value' | grep -o '[^:]*$')
 export artillery_worker_role_name
 
+if [ -z "${artillery_key}" ]; then
+    echo "artillery_key is unset. Running without --record to Artillery Cloud."
+    RECORD_ARGS=""
+else
+    RECORD_ARGS="--record --key ${artillery_key}"
+fi
+
 cat <<EOF > runtimeenv.env
-maxVusers=$maxVusers
-duration=$duration
-arrivalRate=$arrivalRate
-rampUpDuration=$rampUpDuration
+maxVusers=${maxVusers}
+duration=${duration}
+arrivalRate=${arrivalRate}
+rampUpDuration=${rampUpDuration}
 EOF
 
 echo ${launch_config}
@@ -51,16 +58,15 @@ echo ${launch_config}
 # shellcheck disable=SC2090,SC2086
 npx artillery run-fargate \
     --environment "${environment}" \
-    --secret psu_api_key \
-    --secret psu_private_key \
-    --secret psu_kid \
+    --secret psu_api_key psu_private_key psu_kid \
     --region eu-west-2 \
     --cluster artilleryio-cluster \
     --security-group-ids "${security_group}" \
     --subnet-ids "${vpc_subnets}" \
     --task-role-name "${artillery_worker_role_name}" \
     --env-file runtimeenv.env \
-    --output psu_load_test.json \
-    artillery/psu_load_test.yml
+    --output notify_load_test.json \
+    $RECORD_ARGS \
+    artillery/notify_load_test.yml
 
-npx artillery report psu_load_test.json 
+npx artillery report notify_load_test.json
