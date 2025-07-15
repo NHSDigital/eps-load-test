@@ -3,26 +3,26 @@
     "packages/dummySpine"
   ],
   "dependencies": {
-    "artillery": "^2.0.21",
-    "axios": "^1.8.4",
+    "artillery": "^2.0.23",
+    "axios": "^1.10.0",
     "jsonwebtoken": "^9.0.2",
-    "pino": "^9.6.0"
+    "pino": "^9.7.0"
   },
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.148",
-    "@types/node": "^22.14.0",
-    "@typescript-eslint/eslint-plugin": "^8.29.0",
-    "@typescript-eslint/parser": "^8.29.0",
+    "@types/aws-lambda": "^8.10.150",
+    "@types/node": "^24.0.13",
+    "@typescript-eslint/eslint-plugin": "^8.37.0",
+    "@typescript-eslint/parser": "^8.36.0",
     "aws-lambda": "^1.0.7",
-    "esbuild": "^0.25.2",
-    "eslint": "^9.23.0",
-    "eslint-config-prettier": "^10.1.1",
+    "esbuild": "^0.25.6",
+    "eslint": "^9.31.0",
+    "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-import-newlines": "^1.4.0",
-    "eslint-plugin-prettier": "^5.2.6",
+    "eslint-plugin-prettier": "^5.5.1",
     "license-checker": "^25.0.1",
-    "prettier": "^3.5.3",
-    "prettier-eslint": "^16.3.0",
+    "prettier": "^3.6.2",
+    "prettier-eslint": "^16.4.2",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.3"
   }
 }

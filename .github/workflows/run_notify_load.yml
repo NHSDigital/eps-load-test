@@ -1,4 +1,4 @@
-name: Run psu load test
+name: Run psu notify load test
 
 on:
   workflow_dispatch:
@@ -8,21 +8,25 @@ on:
         required: true
         default: 'ref'
       arrivalRate:
-        description: 'The number of new users to add every second'
+        description: 'How many requests to send per second during the main test'
         required: true
-        default: '275'
+        default: '100'
       duration:
         description: 'The duration of the main test'
         required: true
         default: '900'
       rampUpDuration:
-        description: 'The duration to ramp up to the arrival rate'
+        description: 'The duration of ramp-up phase of the test'
         required: true
         default: '900'
       maxVusers:
-        description: 'Maximum number of vusers to create'
+        description: 'Maximum number of virtual users to create'
         required: true
-        default: '500'
+        default: '100'
+      artillery_key:
+        description: 'Your Artillery cloud API key (optional – omit to run without recording)'
+        required: false
+        default: ''
 
 jobs:
   run_artillery:
@@ -40,6 +44,11 @@ jobs:
           echo "## duration : ${{ github.event.inputs.duration }}" >> "$GITHUB_STEP_SUMMARY"
           echo "## rampUpDuration : ${{ github.event.inputs.rampUpDuration }}" >> "$GITHUB_STEP_SUMMARY"
           echo "## maxVusers : ${{ github.event.inputs.maxVusers }}" >> "$GITHUB_STEP_SUMMARY"
+          if [ -n "${{ github.event.inputs.artillery_key }}" ]; then
+            echo "## artillery_key        : (provided)" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "## artillery_key        : (not provided)" >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -47,7 +56,7 @@ jobs:
           ref: ${{ env.BRANCH_NAME }}
 
       - name: Install asdf
-        uses: asdf-vm/actions/setup@1902764435ca0dd2f3388eea723a4f92a4eb8302
+        uses: asdf-vm/actions/setup@05e0d2ed97b598bfce82fd30daf324ae0c4570e6
         with:
           asdf_branch: v0.14.0
       
@@ -61,11 +70,11 @@ jobs:
             ${{ runner.os }}-asdf-
       
       - name: Install asdf dependencies in .tool-versions
-        uses: asdf-vm/actions/install@1902764435ca0dd2f3388eea723a4f92a4eb8302
+        uses: asdf-vm/actions/install@05e0d2ed97b598bfce82fd30daf324ae0c4570e6
         with:
           asdf_branch: v0.14.0
         env:
-            PYTHON_CONFIGURE_OPTS: --enable-shared
+          PYTHON_CONFIGURE_OPTS: --enable-shared
 
       - name: Install Dependencies
         run: make install
@@ -94,8 +103,9 @@ jobs:
           duration: ${{ github.event.inputs.duration }}
           rampUpDuration: ${{ github.event.inputs.rampUpDuration }}
           maxVusers: ${{ github.event.inputs.maxVusers }}
+          artillery_key: ${{ github.event.inputs.artillery_key }}
         run: |
-          ./scripts/run_psu_load_test.sh 
+          ./scripts/run_notify_load_test.sh 
 
       - uses: actions/upload-artifact@v4
         if: always()
@@ -103,8 +113,8 @@ jobs:
         with:
           name: test_report
           path: |
-            psu_load_test.json
-            psu_load_test.json.html
+            notify_load_test.json
+            notify_load_test.json.html
 
       - name: Upload artifacts to S3, if we are using REF environment
         if: github.event.inputs.environment == 'ref'
@@ -114,8 +124,8 @@ jobs:
           BUCKET_NAME: artilleryio-test-data-${{ secrets.AWS_ACCOUNT_ID }}
           RUN_ID: ${{ github.run_id }}
         run: |
-          aws s3 cp psu_load_test.json s3://$BUCKET_NAME/reports/$RUN_ID/psu_load_test.json --acl public-read
-          aws s3 cp psu_load_test.json.html s3://$BUCKET_NAME/reports/$RUN_ID/psu_load_test.json.html --acl public-read
+          aws s3 cp notify_load_test.json s3://$BUCKET_NAME/reports/$RUN_ID/notify_load_test.json --acl public-read
+          aws s3 cp notify_load_test.json.html s3://$BUCKET_NAME/reports/$RUN_ID/notify_load_test.json.html --acl public-read
 
       - name: Output link to HTML report
         if: github.event.inputs.environment == 'ref'
@@ -124,6 +134,6 @@ jobs:
           BUCKET_NAME: artilleryio-test-data-${{ secrets.AWS_ACCOUNT_ID }}
           RUN_ID: ${{ github.run_id }}
         run: |
-          REPORT_URL="https://$BUCKET_NAME.s3.${AWS_REGION}.amazonaws.com/reports/$RUN_ID/psu_load_test.json.html"
+          REPORT_URL="https://$BUCKET_NAME.s3.${AWS_REGION}.amazonaws.com/reports/$RUN_ID/notify_load_test.json.html"
           echo "Test report is hosted at: $REPORT_URL" >> "$GITHUB_STEP_SUMMARY"
           echo "::set-output name=report_url::$REPORT_URL"
