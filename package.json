@@ -16,7 +16,7 @@
     "aws-lambda": "^1.0.7",
     "esbuild": "^0.25.6",
     "eslint": "^9.31.0",
-    "eslint-config-prettier": "^10.1.5",
+    "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-import-newlines": "^1.4.0",
     "eslint-plugin-prettier": "^5.5.1",
     "license-checker": "^25.0.1",
