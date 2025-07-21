@@ -18,7 +18,7 @@
     "eslint": "^9.31.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-import-newlines": "^1.4.0",
-    "eslint-plugin-prettier": "^5.5.1",
+    "eslint-plugin-prettier": "^5.5.3",
     "license-checker": "^25.0.1",
     "prettier": "^3.6.2",
     "prettier-eslint": "^16.4.2",
