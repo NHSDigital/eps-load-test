@@ -97,7 +97,7 @@ jobs:
         run: |
           ./scripts/run_psu_load_test.sh 
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         if: always()
         name: Upload test_report
         with:
