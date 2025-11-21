@@ -9,7 +9,7 @@
     "pino": "^9.11.0"
   },
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.158",
+    "@types/aws-lambda": "^8.10.159",
     "@types/node": "^24.10.1",
     "@typescript-eslint/eslint-plugin": "^8.46.4",
     "@typescript-eslint/parser": "^8.46.2",
