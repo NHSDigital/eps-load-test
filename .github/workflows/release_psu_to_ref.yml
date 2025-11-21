@@ -21,7 +21,7 @@ jobs:
           echo "## psuWorkflowRunID : [${{ github.event.inputs.psuWorkflowRunID }}](https://github.com/NHSDigital/eps-prescription-status-update-api/actions/runs/${{ github.event.inputs.psuWorkflowRunID }})" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Checkout local github actions
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ env.BRANCH_NAME }}
           fetch-depth: 0
