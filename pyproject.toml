@@ -1,40 +1,24 @@
 [project]
-python = "^3.12"
+python = "^3.14"
+name = "eps-load-test"
 
 [tool.poetry]
 name = "eps-load-test"
 description = "EPS AWS account level resource definitions"
 version = "0.0.1-alpha"
 authors = [
-  "Anthony Brown <anthony.brown8@nhs.net>",
-  "Matthew Popat <matthew.popat1@nhs.net>",
-  "Phil Gee <phil.gee@nhs.net>",
-  "Kris Szlapa <kris.szlapa1@nhs.net>",
-  "Jack Spagnoli <jack.spagnoli1@nhs.net>",
-  "Tom Smith <tom.smith24@nhs.net>",
-  "Adam Brown <adam.brown41@nhs.net>",
-  "Sean Steberis <sean.steberis2@nhs.net>",
-  "Jonathan Welch <jonathan.welch1@nhs.net>",
-  "Jim Wild <jim.wild6@nhs.net>"
+  "EPS Team"
 ]
 readme = "README.md"
 license = "MIT"
 repository = "https://github.com/NHSDigital/eps-load-test"
+package-mode = false
 
 [tool.poetry.dependencies]
-python = "^3.12"
-pyyaml = "^6.0"
-docopt = "^0.6.2"
-jsonpath-rw = "^1.4.0"
-semver = "^3.0.4"
-gitpython = "^3.1.44"
+python = "^3.14"
 pre-commit = "^4.1.0"
-cfn-lint = "^1.27.0"
-proxygen-cli = "^2.1.19"
 
-[tool.poetry.dev-dependencies]
-flake8 = "^7.1.2"
-black = "^25.1"
+[tool.poetry.group.dev.dependencies]
 pip-licenses = "^5.0.0"
 
 [tool.poetry.scripts]
