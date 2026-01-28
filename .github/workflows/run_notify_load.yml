@@ -81,7 +81,7 @@ jobs:
 
       - name: Assume dev artillery runner role
         if: github.event.inputs.environment == 'dev'
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v5
         with:
           aws-region: eu-west-2
           role-to-assume: ${{ secrets.DEV_ARTILLERY_RUNNER_ROLE }}
@@ -89,7 +89,7 @@ jobs:
 
       - name: Assume ref artillery runner role
         if: github.event.inputs.environment == 'ref'
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v5
         with:
           aws-region: eu-west-2
           role-to-assume: ${{ secrets.REF_ARTILLERY_RUNNER_ROLE }}
