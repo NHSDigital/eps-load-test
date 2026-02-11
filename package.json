@@ -4,7 +4,7 @@
   ],
   "dependencies": {
     "artillery": "^2.0.30",
-    "axios": "^1.13.4",
+    "axios": "^1.13.5",
     "jsonwebtoken": "^9.0.3",
     "pino": "^9.11.0"
   },
